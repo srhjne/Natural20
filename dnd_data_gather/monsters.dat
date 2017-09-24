@@ -1,0 +1,191 @@
+0 | 1/8  | Kobold 
+1 | 1/8  | Merfolk 
+2 | 1/8  | Stirge 
+3 | 1/4  | Aarakocra 
+4 | 1/4  | Bullywug 
+5 | 1/4  | Dretch 
+6 | 1/4  | Drow 
+7 | 1/4  | Flying Sword 
+8 | 1/4  | Goblin 
+9 | 1/4  | Grimlock 
+10 | 1/4  | Pseudodragon 
+11 | 1/4  | Pteranodon 
+12 | 1/4  | Skeleton 
+13 | 1/4  | Sprite 
+14 | 1/4  | Steam Mephit 
+15 | 1/4  | Violet Fungus 
+16 | 1/4  | Zombie 
+17 | 1/2  | Cockatrice 
+18 | 1/2  | Darkmantle 
+19 | 1/2  | Dust Mephit 
+20 | 1/2  | Gnoll 
+21 | 1/2  | Deep Gnome (Svirfneblin) 
+22 | 1/2  | Gray Ooze 
+23 | 1/2  | Hobgoblin 
+24 | 1/2  | Ice Mephit 
+25 | 1/2  | Lizardfolk 
+26 | 1/2  | Magma Mephit 
+27 | 1/2  | Magmin 
+28 | 1/2  | Orc 
+29 | 1/2  | Rust Monster 
+30 | 1/2  | Sahuagin 
+31 | 1/2  | Satyr 
+32 | 1/2  | Shadow 
+33 | 1/2  | Warhorse Skeleton 
+34 | 1  | Animated Armor 
+35 | 1  | Brass Dragon Wyrmling 
+36 | 1  | Bugbear 
+37 | 1  | Copper Dragon Wyrmling 
+38 | 1  | Dryad 
+39 | 1  | Duergar 
+40 | 1  | Ghoul 
+41 | 1  | Harpy 
+42 | 1  | Hippogriff 
+43 | 1  | Imp 
+44 | 1  | Quasit 
+45 | 1  | Specter 
+46 | 2  | Allosaurus 
+47 | 2  | Ankheg 
+48 | 2  | Azer 
+49 | 2  | Black Dragon Wyrmling 
+50 | 2  | Bronze Dragon Wyrmling 
+51 | 2  | Centaur 
+52 | 2  | Ettercap 
+53 | 2  | Gargoyle 
+54 | 2  | Gelatinous Cube 
+55 | 2  | Ghast 
+56 | 2  | Gibbering Mouther 
+57 | 2  | Green Dragon Wyrmling 
+58 | 2  | Grick 
+59 | 2  | Griffon 
+60 | 2  | Merrow 
+61 | 2  | Mimic 
+62 | 2  | Minotaur Skeleton 
+63 | 2  | Ochre Jelly 
+64 | 2  | Ogre 
+65 | 2  | Ogre Zombie 
+66 | 2  | Pegasus 
+67 | 2  | Plesiosaurus 
+68 | 2  | Rug of Smothering 
+69 | 2  | Sea Hag 
+70 | 2  | Silver Dragon Wyrmling 
+71 | 2  | Wererat 
+72 | 2  | White Dragon Wyrmling 
+73 | 2  | Will-o'-Wisp 
+74 | 3  | Ankylosaurus 
+75 | 3  | Basilisk 
+76 | 3  | Bearded Devil 
+77 | 3  | Blue Dragon Wyrmling 
+78 | 3  | Doppelganger 
+79 | 3  | Gold Dragon Wyrmling 
+80 | 3  | Green Hag 
+81 | 3  | Hell Hound 
+82 | 3  | Manticore 
+83 | 3  | Minotaur 
+84 | 3  | Mummy 
+85 | 3  | Nightmare 
+86 | 3  | Owlbear 
+87 | 3  | Werewolf 
+88 | 3  | Wight 
+89 | 4  | Black Pudding 
+90 | 4  | Chuul 
+91 | 4  | Couatl 
+92 | 4  | Ettin 
+93 | 4  | Ghost 
+94 | 4  | Lamia 
+95 | 4  | Red Dragon Wyrmling 
+96 | 4  | Succubus/Incubus 
+97 | 4  | Wereboar 
+98 | 4  | Weretiger 
+99 | 5  | Air Elemental 
+100 | 5  | Barbed Devil 
+101 | 5  | Bulette 
+102 | 5  | Earth Elemental 
+103 | 5  | Fire Elemental 
+104 | 5  | Flesh Golem 
+105 | 5  | Gorgon 
+106 | 5  | Half-Red Dragon Veteran 
+107 | 5  | Hill Giant 
+108 | 5  | Night Hag 
+109 | 5  | Otyugh 
+110 | 5  | Roper 
+111 | 5  | Salamander 
+112 | 5  | Shambling Mound 
+113 | 5  | Triceratops 
+114 | 5  | Troll 
+115 | 5  | Contents 
+116 | 5  | Vampire Spawn 
+117 | 5  | Water Elemental 
+118 | 5  | Werebear 
+119 | 5  | Wraith 
+120 | 5  | Xorn 
+121 | 6  | Chimera 
+122 | 6  | Drider 
+123 | 6  | Invisible Stalker 
+124 | 6  | Medusa 
+125 | 6  | Vrock 
+126 | 6  | Wyvern 
+127 | 6  | Young Brass Dragon 
+128 | 6  | Young White Dragon 
+129 | 7  | Oni 
+130 | 7  | Shield Guardian 
+131 | 7  | Stone Giant 
+132 | 7  | Young Black Dragon 
+133 | 7  | Young Copper Dragon 
+134 | 8  | Chain Devil 
+135 | 8  | Cloaker 
+136 | 8  | Frost Giant 
+137 | 8  | Hezrou 
+138 | 8  | Hydra 
+139 | 8  | Spirit Naga 
+140 | 8  | Tyrannosaurus Rex 
+141 | 8  | Young Bronze Dragon 
+142 | 8  | Young Green Dragon 
+143 | 9  | Bone Devil 
+144 | 9  | Clay Golem 
+145 | 9  | Cloud Giant 
+146 | 9  | Fire Giant 
+147 | 9  | Glabrezu 
+148 | 9  | Treant 
+149 | 9  | Young Blue Dragon 
+150 | 9  | Young Silver Dragon 
+151 | 10  | Aboleth 
+152 | 10  | Deva 
+153 | 10  | Guardian Naga 
+154 | 10  | Stone Golem 
+155 | 10  | Young Gold Dragon 
+156 | 10  | Young Red Dragon 
+157 | 11  | Behir 
+158 | 11  | Djinni 
+159 | 11  | Efreeti 
+160 | 11  | Contents 
+161 | 11  | Horned Devil 
+162 | 11  | Remorhaz 
+163 | 11  | Roc 
+164 | 12  | Erinyes 
+165 | 13  | Adult Brass Dragon 
+166 | 13  | Adult White Dragon 
+167 | 13  | Nalfeshnee 
+168 | 13  | Rakshasa 
+169 | 13  | Storm Giant 
+170 | 13  | Contents 
+171 | 14  | Adult Black Dragon 
+172 | 14  | Adult Copper Dragon 
+173 | 14  | Ice Devil 
+174 | 15  | Adult Bronze Dragon 
+175 | 15  | Adult Green Dragon 
+176 | 15  | Contents 
+177 | 15  | Purple Worm 
+178 | 16  | Adult Blue Dragon 
+179 | 16  | Adult Silver Dragon 
+180 | 16  | Iron Golem 
+181 | 16  | Marilith 
+182 | 16  | Planetar 
+183 | 17  | Adult Gold Dragon 
+184 | 17  | Adult Red Dragon 
+185 | 17  | Contents 
+186 | 17  | Dragon Turtle 
+187 | 19  | Balor 
+188 | 20  | Ancient Brass Dragon 
+189 | 20  | Ancient White Dragon 
+190 | 20  | Pit Fiend 

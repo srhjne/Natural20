@@ -1,6 +1,7 @@
-from model import Monster, Attack
+from model import Monster, Attack, LevelLookup, User, UserStatus, Goal, GoalStatus
 from model import connect_to_db, db
 from server import app
+import datetime
 
 
 
@@ -44,6 +45,62 @@ def load_attacks():
 
 	db.session.commit()
 
+def load_level_lookup():
+	for line in open("dnd_data_gather/levels.dat"):
+		xp, level, modifier = line.split("\t")
+		# print level, len(level)
+		# import pdb; pdb.set_trace()
+		xp = int(xp.strip())
+		level = int(level.strip())
+		min_cr = (level-1.0)/4.0
+		max_cr = (level+1.0)/4.0
+		hp_max = 4+4*level
+
+		level = LevelLookup(level=level, min_cr=min_cr, max_cr=max_cr,
+							hit_point_max=hp_max, required_xp=xp)
+		db.session.add(level)
+
+	db.session.commit()
+
+
+def make_first_user():
+	username = "ToK"
+	email = "sarahjaneiom@gmail.com"
+	password = "1234"
+	first_user = User(username=username, email=email, password=password)
+	db.session.add(first_user)
+	db.session.commit()
+
+	user_id = User.query.filter(User.email == email).one().user_id
+	goal_type = "Steps"
+	valid_from = datetime.datetime.strptime("24-Sep-2017", "%d-%b-%Y")
+	valid_to = datetime.datetime.strptime("27-Sep-2017","%d-%b-%Y")
+	value = 2000
+	xp = 100
+	first_goal = Goal(user_id=user_id, goal_type=goal_type,valid_to=valid_to, 
+					  valid_from=valid_from, value=value, xp=xp)
+	db.session.add(first_goal)
+	db.session.commit()
+
+
+	goal_id = Goal.query.filter(Goal.user_id == user_id, Goal.goal_type == "Steps").one().goal_id
+	date_recorded = datetime.datetime.now()
+	value = 1000
+	first_status = GoalStatus(date_recorded=date_recorded, value=value, goal_id=goal_id)
+	db.session.add(first_status)
+	db.session.commit()
+
+
+	level=1
+	current_xp = 0
+	current_hp = 8
+	first_user_status = UserStatus(date_recorded=date_recorded,current_hp=current_hp,
+								   current_xp=current_xp, level=level, user_id=user_id)
+	db.session.add(first_user_status)
+	db.session.commit()
+
+
+
 
 
 
@@ -58,3 +115,5 @@ if __name__ == "__main__":
 
     load_monsters()
     load_attacks()
+    load_level_lookup()
+    make_first_user()

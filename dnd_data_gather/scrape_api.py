@@ -81,7 +81,7 @@ with open("monsters.dat", "w") as g:
 						num_dice = None
 						type_dice = None
 						dmg_mod = None
-					f.write("%s|%s|%s|%s|%s|%s \n" % (creature_index,atk_name,avg_dmg,num_dice,type_dice,dmg_mod))
+					f.write("%s|%s|%s|%s|%s|%s|%s \n" % (creature_index,atk_name,dmg_type,avg_dmg,num_dice,type_dice,dmg_mod))
 				# import pdb; pdb.set_trace()
 				g.write("%s | %s | %s \n" % (creature_index, challenge, creature_name))
 				creature_index += 1

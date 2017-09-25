@@ -3,6 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+class LevelLookup(db.Model):
+
+    __tablename__ = "levellookup"
+
+    level = db.Column(db.Integer, primary_key=True)
+    
+
 
 class Monster(db.Model):
 
@@ -10,7 +17,7 @@ class Monster(db.Model):
 
 
 	monster_id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(24), nullable=False)
+	name = db.Column(db.String(32), nullable=False)
 	cr = db.Column(db.Float, nullable=False)
 
 

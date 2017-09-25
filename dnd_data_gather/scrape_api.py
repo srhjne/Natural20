@@ -2,20 +2,20 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-
-# with open("weapons.dat", "w") as f:
-# 	for i in range(1, 257):
-# 		e = requests.get("http://www.dnd5eapi.co/api/equipment/%d" % i)
-# 		equipment = e.json()
-# 		if equipment["equipment_category"] == "Weapon":
-# 			print equipment["damage"]["dice_count"]
-# 			f.write(equipment["name"]+"|"+equipment["weapon_category:"]+
-# 				    "|"+str(equipment["damage"]["dice_value"])+"|"+
-# 				      str(equipment["damage"]["dice_count"])+"\n")
-
-
+# Use DnD api to search for weapon attacks
+with open("weapons.dat", "w") as f:
+	for i in range(1, 257):
+		e = requests.get("http://www.dnd5eapi.co/api/equipment/%d" % i)
+		equipment = e.json()
+		if equipment["equipment_category"] == "Weapon":
+			print equipment["damage"]["dice_count"]
+			f.write(equipment["name"]+"|"+equipment["weapon_category:"]+
+				    "|"+str(equipment["damage"]["dice_value"])+"|"+
+				      str(equipment["damage"]["dice_count"])+"\n")
 
 
+
+# Use DnD wiki pages to find all monsters and attacks
 monster_page = requests.get("http://www.dandwiki.com/wiki/5e_SRD:Monsters")
 with open("monsters.dat", "w") as g:
 	with open("attacks.dat", "w") as f:

@@ -1,0 +1,19 @@
+{%extends 'base.html'%}
+
+{%block title%} Natural 20 Login {%endblock%}
+
+{%block content%}
+<div class="container">
+{% for message in get_flashed_messages()%}
+{{message}}
+{%endfor%}
+<form action="/login" method="POST">
+Username<input type="text" name="username"> <br>
+Password<input type="password" name="password"> <br>
+<input type="submit" value="Login">
+</form>
+
+</div>
+
+
+{%endblock%}

@@ -15,7 +15,7 @@ app.jinja_env.undefined = StrictUndefined
 
 
 @app.route('/user/<username>')
-def index(username):
+def profile_page(username):
 	"""Homepage."""
 	now = datetime.datetime.now()
 	user = User.query.filter(User.username==username).one()
@@ -32,7 +32,28 @@ def index(username):
 
 
 	return render_template("user_page.html", username=username, goals=goals, 
-		                   goalstatus = progress, xp=xp, hp=hp, level=level )
+		                   goalstatus = progress, xp=xp, hp=hp, level=level)
+
+
+@app.route('/login')
+def login():
+	return render_template("login.html")
+
+
+@app.route('/login', methods=["POST"])
+def login_post():
+	username = request.form.get("username")
+	password = request.form.get("password")
+
+	user = User.query.filter(User.username == username).one()
+	if user.password == password:
+		session["user_id"] = user.user_id
+		return redirect("/user/%s"%username)
+	else:
+		flash("Incorrect Password")
+		return redirect("/login")
+
+
 
 
 if __name__ == "__main__":

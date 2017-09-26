@@ -4,8 +4,12 @@
 <div class=container>
 Welcome {{username}}
 <br>
-Your current quest is to complete {{goals[0].value}} {{goals[0].goal_type}}
-You are currently at {{goalstatus[1]}} {{goals[0].goal_type}} as of {{goalstatus[0]}}
+{%for date, value, goal in goalstatus %}
+Your current quest is to complete {{goal.value}} {{goal.goal_type}} by {{goal.valid_to}} <br>
+You are currently at {{value}} {{goal.goal_type}} as of {{date}}
+<br>
+<br>
+{%endfor%}
 
 <br>
 
@@ -15,5 +19,6 @@ Level: {{level}} <br>
 XP: {{xp}} <br>
 HP: {{hp}} <br>
 </div>
+<a href="/set_goal"> Set Goals </a>
 </div>
 {%endblock%}

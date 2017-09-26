@@ -1,0 +1,19 @@
+{%extends "base.html"%}
+{%block title%} Natural 20: Character Sheet {%endblock%}
+{%block content%}
+
+Welcome {{username}}
+<br>
+Your current quest is to complete {{goals[0].value}} {{goals[0].goal_type}}
+You are currently at {{goalstatus[1]}} {{goals[0].goal_type}} as of {{goalstatus[0]}}
+
+<br>
+
+<div>
+Current Stats: <br>
+Level: {{level}} <br>
+XP: {{xp}} <br>
+HP: {{hp}} <br>
+</div>
+
+{%endblock%}

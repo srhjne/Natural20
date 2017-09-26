@@ -67,7 +67,7 @@ class User(db.Model):
 
 
     def __repr__(self):
-        return "<User id=%s, username=%s>" %(user_id, username)
+        return "<User id=%s, username=%s>" %(self.user_id, self.username)
 
 class Goal(db.Model):
 
@@ -115,7 +115,7 @@ class  UserStatus(db.Model):
     current_hp = db.Column(db.Integer, nullable=False)
     date_recorded = db.Column(db.TIMESTAMP, nullable=False)
 
-    user = db.relationship("User", backref=db.backref("userstatus"))
+    user = db.relationship("User", backref=db.backref("userstatus", order_by = date_recorded))
 
     levellookup = db.relationship("LevelLookup", backref=db.backref("userstatus"))
 

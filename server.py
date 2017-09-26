@@ -16,23 +16,30 @@ app.jinja_env.undefined = StrictUndefined
 
 @app.route('/user/<username>')
 def profile_page(username):
-	"""Homepage."""
-	now = datetime.datetime.now()
+	"""profile page"""
+
 	user = User.query.filter(User.username==username).one()
+	print "user id", session.get("user_id")
+	if session.get("user_id", "") != user.user_id:
+		flash("You must be logged in to view this page")
+		return redirect("/login") 
+	else:
+		now = datetime.datetime.now()
+		
 
-	status = user.userstatus[-1]
+		status = user.userstatus[-1]
 
-	xp = status.current_xp
-	hp = status.current_hp
-	level = status.level
-
-
-	goals = [goal for goal in user.goal if goal.valid_from < now and goal.valid_to > now]
-	progress = sorted([(status.date_recorded, status.value) for status in goals[-1].goalstatus])[0]
+		xp = status.current_xp
+		hp = status.current_hp
+		level = status.level
 
 
-	return render_template("user_page.html", username=username, goals=goals, 
-		                   goalstatus = progress, xp=xp, hp=hp, level=level)
+		goals = [goal for goal in user.goal if goal.valid_from < now and goal.valid_to > now]
+		progress = sorted([(status.date_recorded, status.value) for status in goals[-1].goalstatus])[0]
+
+
+		return render_template("user_page.html", username=username, goals=goals, 
+			                   goalstatus = progress, xp=xp, hp=hp, level=level)
 
 
 @app.route('/login')
@@ -52,6 +59,14 @@ def login_post():
 	else:
 		flash("Incorrect Password")
 		return redirect("/login")
+
+
+@app.route('/logout')
+def logout():
+	del session["user_id"]
+	flash("You are now logged out")
+	return redirect("/login")
+
 
 
 

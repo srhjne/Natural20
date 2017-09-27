@@ -74,8 +74,9 @@ def auth_ret():
 	service = build('fitness', 'v1', http=http)
 
 	if session.get("user_id"):
+		goals_to_resolve=[]
 		user = User.query.get(int(session.get("user_id")))
-		goals = [goal for goal in user.goal if goal.valid_from < datetime.datetime.now() and goal.valid_to > datetime.datetime.now()]
+		goals = [goal for goal in user.goal if goal.valid_from < datetime.datetime.now() and not goal.resolved]
 		for goal in goals:
 			if goal.goal_type == "Steps":
 				millisstart = fhf.get_millis_date(goal.valid_from)
@@ -101,9 +102,13 @@ def auth_ret():
 					goalprogress = GoalStatus(goal_id = goal.goal_id, date_recorded = datetime.datetime.now(), value=value)
 					db.session.add(goalprogress)
 					db.session.commit()
-					if datetime.datetime.now() > goal.valid_to:
-						return redirect("/outcome")
-		return redirect("/user/%s" % user.username)
+				if datetime.datetime.now() > goal.valid_to and goal.resolved is None:
+					goals_to_resolve.append(goal)
+		print goals_to_resolve
+		if goals_to_resolve:
+			return redirect("/outcome")
+		else:			
+			return redirect("/user/%s" % user.username)
 	else:
 		flash("You need to log in")
 		return redirect("/login")

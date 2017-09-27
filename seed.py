@@ -73,10 +73,10 @@ def make_first_user():
 
 	user_id = User.query.filter(User.email == email).one().user_id
 	goal_type = "Steps"
-	valid_from = datetime.datetime.strptime("24-Sep-2017", "%d-%b-%Y")
-	valid_to = datetime.datetime.strptime("27-Sep-2017","%d-%b-%Y")
-	value = 2000
-	xp = 100
+	valid_from = datetime.datetime.strptime("19-Sep-2017", "%d-%b-%Y")
+	valid_to = datetime.datetime.strptime("25-Sep-2017","%d-%b-%Y")
+	value = 15000
+	xp = 300
 	first_goal = Goal(user_id=user_id, goal_type=goal_type,valid_to=valid_to, 
 					  valid_from=valid_from, value=value, xp=xp)
 	db.session.add(first_goal)
@@ -84,7 +84,7 @@ def make_first_user():
 
 
 	goal_id = Goal.query.filter(Goal.user_id == user_id, Goal.goal_type == "Steps").one().goal_id
-	date_recorded = datetime.datetime.now()
+	date_recorded = datetime.datetime.strptime("24-Sep-2017","%d-%b-%Y")
 	value = 1000
 	first_status = GoalStatus(date_recorded=date_recorded, value=value, goal_id=goal_id)
 	db.session.add(first_status)

@@ -6,8 +6,11 @@ from model import db, connect_to_db
 from oauth2client.client import OAuth2WebServerFlow
 import httplib2
 from apiclient.discovery import build
+
+
 import os
 import datetime
+import random
 
 import fitness_helper_functions as fhf
 
@@ -114,9 +117,69 @@ def auth_ret():
 		return redirect("/login")
 
 
+@app.route('/outcome.json')
+def outcome_json():
+	user = User.query.get(int(session.get("user_id")))
+	userstatuses = user.userstatus
+	most_recent_status = userstatuses[-1] # this works because I applied ordering in model.py
+	goal_list = []
+
+	new_xp = most_recent_status.current_xp
+	new_hp = most_recent_status.current_hp
+
+	goals = [goal for goal in user.goal if goal.valid_to < datetime.datetime.now() and not goal.resolved]
+	for goal in goals:
+		goalstatus_max = max([goalstatus.value for goalstatus in goal.goalstatus])
+		if goalstatus_max >= goal.value:
+			# good things happen
+			goal_list.append({"username": user.username,"achieved": True, "goal_type": goal.goal_type, "goal_value" : goal.value,
+						      "valid_from": goal.valid_from, "valid_to" : goal.valid_to,
+						      "goal_id": goal.goal_id, "xp": goal.xp, "current_xp": most_recent_status.current_xp,
+						      "current_level": most_recent_status.level})
+			
+			new_xp += goal.xp
+			
+			goal.resolved = "Y"
+		else:
+			# bad things happen
+			mincr = most_recent_status.levellookup.min_cr
+			maxcr = most_recent_status.levellookup.max_cr
+			monster_list = Monster.query.filter(Monster.cr <= maxcr, Monster.cr >= mincr).all()
+			monster = random.choice(monster_list)
+			attack = random.choice(monster.attack)
+			if attack.num_dice:
+				damage_val = attack.num_dice*random.randint(1,attack.type_dice)
+				if attack.dice_modifier:
+					damage_val += attack.dice_modifier
+			else:
+				damage_val = avg_damage
+			goal_list.append({"username": user.username ,"achieved": False, "goal_type": goal.goal_type, "goal_value" : goal.value,
+						      "valid_from": goal.valid_from, "valid_to" : goal.valid_to,
+						      "goal_id": goal.goal_id, "xp": goal.xp, "current_xp": most_recent_status.current_xp,
+						      "current_level": most_recent_status.level, "monster": monster.name   ,
+						      "attack":{"name": attack.name,
+						                "damage_type": attack.damage_type,
+						                "damage_val": damage_val
+						                }})	
+			new_hp -= damage_val
+
+			goal.resolved = "Y"
+	level = LevelLookup.query.filter(LevelLookup.required_xp <= new_xp).order_by(LevelLookup.level).all()
+	print level
+	new_level=level[-1]
+	if new_level.level > most_recent_status.level:
+		new_hp = new_level.hit_point_max
+
+
+	new_status = UserStatus(user_id=user.user_id, current_xp = new_xp, current_hp=new_hp, level=new_level.level, 
+							date_recorded=datetime.datetime.now())	
+	return jsonify(goal_list)
+
+
+
 @app.route('/outcome')
 def outcome():
-	return "monster page will go here"
+	return render_template("outcome.html")
 
 
 @app.route('/test')

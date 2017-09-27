@@ -53,7 +53,7 @@ def load_level_lookup():
 		xp = int(xp.strip())
 		level = int(level.strip())
 		min_cr = (level-1.0)/4.0
-		max_cr = (level+1.0)/4.0
+		max_cr = (level)/4.0
 		hp_max = 4+4*level
 
 		level = LevelLookup(level=level, min_cr=min_cr, max_cr=max_cr,
@@ -93,7 +93,7 @@ def make_first_user():
 
 	level=1
 	current_xp = 0
-	current_hp = 8
+	current_hp = 12
 	first_user_status = UserStatus(date_recorded=date_recorded,current_hp=current_hp,
 								   current_xp=current_xp, level=level, user_id=user_id)
 	db.session.add(first_user_status)

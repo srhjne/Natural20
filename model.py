@@ -80,6 +80,7 @@ class Goal(db.Model):
     valid_to = db.Column(db.TIMESTAMP, nullable=True)
     value = db.Column(db.Integer, nullable=False)
     xp = db.Column(db.Integer, nullable=False)
+    resolved = db.Column(db.String(1), nullable=True)
 
     user = db.relationship("User", backref=db.backref("goal", order_by=valid_to))
 

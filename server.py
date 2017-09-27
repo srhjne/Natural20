@@ -101,10 +101,18 @@ def auth_ret():
 					goalprogress = GoalStatus(goal_id = goal.goal_id, date_recorded = datetime.datetime.now(), value=value)
 					db.session.add(goalprogress)
 					db.session.commit()
+					if datetime.datetime.now() > goal.valid_to:
+						return redirect("/outcome")
 		return redirect("/user/%s" % user.username)
 	else:
 		flash("You need to log in")
 		return redirect("/login")
+
+
+@app.route('/outcome')
+def outcome():
+	return "monster page will go here"
+
 
 @app.route('/test')
 def test():
@@ -122,13 +130,16 @@ def set_goals():
 
 
 
-@app.route("/calc_xp.json", methods=['GET', 'POST'])
+@app.route("/calc_xp.json", methods=['GET'])
 def calc_xp():
 	user = User.query.get(session.get('user_id'))
 	goal_type = request.args.get("goal_type")
 	goal_value = request.args.get("value")
-	valid_from = request.args.get("valid_from")
-	valid_to = request.args.get("valid_to")
+	goal_value = int(goal_value)
+	valid_from_u = request.args.get("valid_from")
+	valid_from = datetime.datetime.strptime(valid_from_u, "%Y-%m-%d")
+	valid_to_u = request.args.get("valid_to")
+	valid_to = datetime.datetime.strptime(valid_to_u, "%Y-%m-%d")
 	value = request.args.get("value")
 	print "Position 2"
 	timedelta = (valid_to - valid_from).total_seconds()
@@ -145,7 +156,7 @@ def calc_xp():
 		for goal in goals:
 			timedelta = (goal.valid_to - goal.valid_from).total_seconds()
 			scaled_value = goal.value/timedelta
-			ratio = scaled_value/scaled_value_test
+			ratio = scaled_value_test/scaled_value
 			if ratio < 0.8:
 				print "Position 5"
 				return jsonify({"xp": 200})
@@ -186,7 +197,7 @@ def set_goal_db():
 			for goal in goals:
 				timedelta = (goal.valid_to - goal.valid_from).total_seconds()
 				scaled_value = goal.value/timedelta
-				ratio = scaled_value/scaled_value_test
+				ratio = scaled_value_test/scaled_value
 				if ratio < 0.8:
 					xp = 200
 					break
@@ -200,7 +211,9 @@ def set_goal_db():
 		goalstatus = GoalStatus(goal_id=goal_db.goal_id,value=0,date_recorded=valid_from)
 		db.session.add(goalstatus)
 		db.session.commit()
-		return redirect("/user/%s"%user.username)
+		auth_uri = flow.step1_get_authorize_url()
+		return redirect(auth_uri)
+		
 
 
 

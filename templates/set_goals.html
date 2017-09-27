@@ -1,0 +1,46 @@
+{%extends 'base.html'%}
+
+{%block title%} Natural 20 Set Goals {%endblock%}
+
+{%block content%}
+<div class="container">
+{% for message in get_flashed_messages()%}
+{{message}}
+{%endfor%}
+<form action="/set_goal" method="POST">
+Quest type: 
+<select id="goal_type" name="goal_type">
+<option value="Steps">Steps</option>
+</select>
+<br>
+Goal value:<input id="value" type="number" name="value"> <br>
+<br>
+Start Date (optional): <input id="valid_from" type="date" name="valid_from">
+<br>
+End Date: <input id="valid_to" type="date" name="valid_to">
+<br>
+
+<input type="submit" value="Start Quest!">
+</form>
+<button id="calc_xp"> Calculate XP </button>
+<div id="show_xp">
+</div>
+
+</div>
+
+<script>
+$("#calc_xp").on('click',function (evt){
+	evt.preventDefault()
+	var data_to_send = {goal_type: $("#goal_type").val(),
+					valid_from: $("#valid_from").val(),
+					valid_to: $("#valid_to").val(),
+					value: $("#value").val()} ;
+
+	$.get('/calc_xp.json',data_to_send, function (results) {
+
+	$("#show_xp").html(results["xp"]);
+	});
+});
+</script>
+
+{%endblock%}

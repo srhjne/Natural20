@@ -1,0 +1,23 @@
+{%extends 'base.html'%}
+
+{%block title%} Natural 20 Registration {%endblock%}
+
+{%block content%}
+<div class="container">
+{% for message in get_flashed_messages()%}
+{{message}}
+{%endfor%}
+<form action="/registration" method="POST">
+Username<input type="text" name="username"> <br>
+Email<input type="text" name="email"> <br>
+
+Password<input type="password" name="password"> <br>
+Confirm password<input type="password" name="confirm_password"> <br>
+
+<input type="submit" value="Begin your campaign">
+</form>
+
+</div>
+
+
+{%endblock%}

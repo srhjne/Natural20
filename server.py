@@ -49,17 +49,70 @@ def profile_page(username):
 
 		xp = status.current_xp
 		hp = status.current_hp
-		level = status.level
+		if hp == 0:
+			return render_template("dead.html")
+		else:
+			level = status.level
 
-		progresses = []
-		goals = [goal for goal in user.goal if goal.valid_from < now and goal.valid_to > now]
-		for goal in goals:
-			progress = sorted([(status.date_recorded, status.value, goal) for status in goal.goalstatus])[-1]
-			progresses.append(progress)
+			progresses = []
+			goals = [goal for goal in user.goal if goal.valid_from < now and goal.valid_to > now]
+			for goal in goals:
+				progress = sorted([(status.date_recorded, status.value, (status.value/goal.value)*100, goal) for status in goal.goalstatus])[-1]
+				progresses.append(progress)
 
 
-		return render_template("user_page.html", username=username,  
-			                   goalstatus = progresses, xp=xp, hp=hp, level=level)
+			return render_template("user_page.html", username=username,  
+				                   goalstatus = progresses, xp=xp, hp=hp, level=level)
+
+
+@app.route('/registration')
+def registration():
+	return render_template("registration.html")
+
+
+@app.route('/registration', methods=["POST"])
+def registration_handle():
+	username = request.form.get("username")
+	if User.query.filter(User.username==username).all() or not username or " " in username:
+		flash("Sorry that username is already taken!")
+		return redirect("/registration")
+	else:
+		password = request.form.get("password")
+		confirm_password = request.form.get("confirm_password")
+		if confirm_password != password or not password:
+			flash("Passwords do not match")
+			return redirect("/registration")
+		else:
+			email = request.form.get("email")
+			if email and " " not in email and "@" in email:
+				user = User(username=username, email=email, password=password)
+				db.session.add(user)
+				db.session.commit()
+				user_db = User.query.filter(User.username==username).first()
+				userstatus = UserStatus(user_id=user_db.user_id,current_hp=12,current_xp=0,
+										level=1,date_recorded=datetime.datetime.now())
+				db.session.add(userstatus)
+				db.session.commit()
+				flash("Thanks for registering!")
+				return redirect("/login")
+			else:
+				flash("Please enter a valid email address")
+				return redirect("/registration")
+
+
+@app.route("/reroll", methods=["POST"])
+def reroll():
+	user_id = session.get("user_id")
+	if not user_id:
+		flash("You must be logged in to view this")
+		return redirect("/login")
+	else:
+		user = User.query.get(user_id)
+		userstatus = UserStatus(user_id=user_id, current_xp=0, current_hp=12, level=1, date_recorded=datetime.datetime.now())
+		db.session.add(userstatus)
+		db.session.commit()
+		return redirect("/user/%s"%user.username)
+
 
 
 @app.route('/login')
@@ -74,6 +127,7 @@ def auth_ret():
 	credentials = flow.step2_exchange(code)
 	http = httplib2.Http()
 	http = credentials.authorize(http)
+	global service 
 	service = build('fitness', 'v1', http=http)
 
 	if session.get("user_id"):
@@ -169,10 +223,14 @@ def outcome_json():
 	new_level=level[-1]
 	if new_level.level > most_recent_status.level:
 		new_hp = new_level.hit_point_max
+	else:
+		new_hp = max(0, new_hp)
 
 
 	new_status = UserStatus(user_id=user.user_id, current_xp = new_xp, current_hp=new_hp, level=new_level.level, 
 							date_recorded=datetime.datetime.now())	
+	db.session.add(new_status)
+	db.session.commit()
 	return jsonify(goal_list)
 
 
@@ -292,16 +350,21 @@ def login_post():
 	username = request.form.get("username")
 	password = request.form.get("password")
 
-	user = User.query.filter(User.username == username).one()
-	if user.password == password:
-		session["user_id"] = user.user_id
-		auth_uri = flow.step1_get_authorize_url()
-		return redirect(auth_uri)
-		# return redirect("/user/%s"%username)
+	users = User.query.filter(User.username == username).all()
+	if users:
+		user = users[0]
+		if user.password == password:
+			session["user_id"] = user.user_id
+			auth_uri = flow.step1_get_authorize_url()
+			return redirect(auth_uri)
+			# return redirect("/user/%s"%username)
+		else:
+			flash("Incorrect Password")
+			return redirect("/login")
 	else:
-		flash("Incorrect Password")
+		flash("Incorrect username")
 		return redirect("/login")
-
+	
 
 @app.route('/logout')
 def logout():

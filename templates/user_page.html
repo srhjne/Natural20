@@ -4,9 +4,15 @@
 <div class=container>
 Welcome {{username}}
 <br>
-{%for date, value, goal in goalstatus %}
+{%for date, value, ratio, goal in goalstatus %}
 Your current quest is to complete {{goal.value}} {{goal.goal_type}} by {{goal.valid_to}} <br>
 You are currently at {{value}} {{goal.goal_type}} as of {{date}}
+ <div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow={{value}}
+  aria-valuemin="0" aria-valuemax={{goal.value}} style="width:{{ratio}}%">
+    <span class="sr-only">{{ratio}}% complete</span>
+  </div>
+</div> 
 <br>
 <br>
 {%endfor%}

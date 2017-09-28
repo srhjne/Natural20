@@ -7,7 +7,7 @@ Welcome {{username}}
 {%for date, value, ratio, goal in goalstatus %}
 Your current quest is to complete {{goal.value}} {{goal.goal_type}} by {{goal.valid_to}} <br>
 You are currently at {{value}} {{goal.goal_type}} as of {{date}}
- <div class="progress">
+ <div class="progress" id={{goal.goal_id}}>
   <div class="progress-bar" role="progressbar" aria-valuenow={{value}}
   aria-valuemin="0" aria-valuemax={{goal.value}} style="width:{{ratio}}%">
     <span class="sr-only">{{ratio}}% complete</span>
@@ -25,6 +25,9 @@ Level: {{level}} <br>
 XP: {{xp}} <br>
 HP: {{hp}} <br>
 </div>
-<a href="/set_goal"> Set Goals </a>
+<div id="graph-div" style="width:600px;height:250px;">
 </div>
+</div>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="/static/homepage_plots.js"></script>
 {%endblock%}

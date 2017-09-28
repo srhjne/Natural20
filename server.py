@@ -31,6 +31,13 @@ flow = OAuth2WebServerFlow(client_id=client_id,
                            scope=scope,
                            redirect_uri='http://localhost:5000/auth_return/')
 
+@app.route('/')
+def landing_page():
+	if session.get("user_id"):
+		user = User.query.get(session["user_id"])
+		return redirect("/user/%s"%user.username)
+	else:
+		return redirect("/login")
 
 @app.route('/user/<username>')
 def profile_page(username):

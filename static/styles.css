@@ -1,0 +1,27 @@
+#stats{
+	border: solid 3px black;
+	border-radius: 5px;
+	padding: 10px;
+}
+
+#goal_stats .figures_div {
+	border: solid 3px black;
+	border-radius: 5px;
+	padding: 10px;
+}
+
+.flashed_messages {
+	border: solid 1px black;
+	border-radius: 5px;
+	padding:10px;
+	display: inline-flex;
+}
+
+form {
+	margin: 20px;
+	font-size: 20px
+}
+
+#calc_xp {
+	font-size: 20px;
+}

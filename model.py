@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+import datetime
 
 
 db = SQLAlchemy()
@@ -17,6 +18,10 @@ class LevelLookup(db.Model):
 
     def __repr__(self):
         return "<Level %s>"%self.level
+
+    def get_suitable_monsters(self):
+        monsters = Monster.query.filter(Monster.cr >= self.min_cr, Monster.cr <=self.max_cr).all()
+        return monsters
 
 
 
@@ -53,6 +58,17 @@ class Attack(db.Model):
         return "<Attack id=%s, name=%s" % (self.attack_id, self.name)
 
 
+    def get_damage(self):
+        if self.num_dice:
+            damage_val = self.num_dice*random.randint(1,self.type_dice)
+            if self.dice_modifier:
+                damage_val += self.dice_modifier
+        else:
+            damage_val = avg_damage
+        return damage_val
+
+
+
 #Classes for handling users: User, Goal, GoalStatus, UserStatus
 
 class User(db.Model):
@@ -68,6 +84,64 @@ class User(db.Model):
 
     def __repr__(self):
         return "<User id=%s, username=%s>" %(self.user_id, self.username)
+
+    def get_current_status(self):
+        return self.userstatus[-1]
+
+
+    def get_current_goals(self):
+        goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_from < datetime.datetime.now(), Goal.valid_to > datetime.datetime.now()).all()
+        return goals
+
+    def get_unresolved_goals(self):
+        goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_from < datetime.datetime.now(), Goal.resolved.is_(None)).all()
+        return goals
+
+    def get_unresolved_overdue_goals(self):
+        goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_to < datetime.datetime.now(), Goal.resolved.is_(None)).all()
+        return goals
+
+    def calc_xp(self, goal_value, valid_from, valid_to, goal_type="Steps"):
+        timedelta = (valid_to - valid_from).total_seconds()
+        scaled_value_test = goal_value/timedelta
+
+        xp = 500
+
+        goals = Goal.query.filter(Goal.goal_type == goal_type, Goal.user_id==self.user_id).all()
+        if not goals:
+            xp = 500
+        else:
+            for goal in goals:
+                timedelta = (goal.valid_to - goal.valid_from).total_seconds()
+                scaled_value = goal.value/timedelta
+                ratio = scaled_value_test/scaled_value
+                if ratio < 0.8:
+                    xp = 200
+                    break
+                elif ratio >= 0.8 and ratio < 1.1:
+                    xp = 300
+        return xp
+
+    @staticmethod
+    def get_level_from_xp(xp):
+        level = LevelLookup.query.filter(LevelLookup.required_xp <= xp).order_by(LevelLookup.level).all()
+        return level[-1]
+
+    @classmethod
+    def make_new_user(cls, username, email, password):
+        user = cls(username=username, email=email, password=password)
+        db.session.add(user)
+        db.session.commit()
+        user_db = cls.query.filter(cls.username==username).first()
+        userstatus = UserStatus(user_id=user_db.user_id,current_hp=12,current_xp=0,
+                                level=1,date_recorded=datetime.datetime.now())
+        db.session.add(userstatus)
+        db.session.commit()
+
+    def reroll_stats(self):
+        userstatus = UserStatus(user_id=self.user_id, current_xp=0, current_hp=12, level=1, date_recorded=datetime.datetime.now())
+        db.session.add(userstatus)
+        db.session.commit()
 
 class Goal(db.Model):
 
@@ -89,6 +163,24 @@ class Goal(db.Model):
         return "<Goal id=%s type=%s value=%s>"%(self.goal_id, self.goal_type, self.value)
 
 
+    def get_current_status(self):
+        return self.goalstatus[-1]
+
+    def get_status_series(self):
+        statuses = sorted([(status.date_recorded, status.value) for status in self.goalstatus])
+        return statuses
+
+    def commit_goal(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def make_goal_info_dictionary(self):
+        return {"username": self.user.username,"achieved": True, "goal_type": self.goal_type, "goal_value" : self.value,
+                              "valid_from": self.valid_from, "valid_to" : self.valid_to,
+                              "goal_id": self.goal_id, "xp": self.xp, "current_xp": self.user.get_current_status().current_xp,
+                              "current_level": self.user.get_current_status().level}
+    
+
 class GoalStatus(db.Model):
 
     __tablename__ = "goalstatuses"
@@ -103,6 +195,13 @@ class GoalStatus(db.Model):
 
     def __repr__(self):
         return "<Goal Status id=%s, date=%s>"%(self.goalstatus_id, self.date_recorded)
+
+    @classmethod
+    def make_first_status(cls, goal_type, valid_from, valid_to, goal_value, xp, user_id):
+        goal_db = Goal.query.filter(Goal.user_id==user_id, Goal.xp==xp, Goal.goal_type==goal_type, Goal.value==goal_value, Goal.valid_from==valid_from, Goal.valid_to==valid_to).first()
+        gs = cls(goal_id=goal_db.goal_id,value=0,date_recorded=valid_from)
+        db.session.add(gs)
+        db.session.commit()
 
 
 class  UserStatus(db.Model):
@@ -123,8 +222,17 @@ class  UserStatus(db.Model):
     def __repr__(self):
         return "<User Status id=%s, user id=%s, date=%s"%(self.userstatus_id,self.user_id,self.date_recorded)
 
-
-
+    @classmethod
+    def create_save_updated_status(cls, user, current_status, new_xp, new_hp):
+        new_level = user.get_level_from_xp(new_xp)
+        if new_level.level > current_status.level:
+            new_hp = new_level.hit_point_max
+        else:
+            new_hp = max(0, new_hp)
+        new_status = cls(user_id=user.user_id, current_xp = new_xp, current_hp=new_hp, level=new_level.level, 
+                            date_recorded=datetime.datetime.now())  
+        db.session.add(new_status)
+        db.session.commit()
 
 
 

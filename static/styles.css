@@ -1,3 +1,18 @@
+@font-face {
+    font-family: dungeonsFont;
+    src: url(DUNGRG__.TTF);
+}
+
+h1 {
+	font-family: dungeonsFont;
+	font-size: 70px;
+}
+
+.navbar-brand {
+	font-family: dungeonsFont;
+	font-size:30px;
+}
+
 #stats{
 	border: solid 3px black;
 	border-radius: 5px;

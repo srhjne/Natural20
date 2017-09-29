@@ -18,7 +18,7 @@ app.secret_key = "ABC"
 app.jinja_env.undefined = StrictUndefined
 
 
-from views import *
+
 
 client_id = os.environ["GGL_ID"]
 client_secret = os.environ["GGL_SECRET"]
@@ -29,7 +29,7 @@ flow = OAuth2WebServerFlow(client_id=client_id,
                            scope=scope,
                            redirect_uri='http://localhost:5000/auth_return/')
                                         
-
+from views import *
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the

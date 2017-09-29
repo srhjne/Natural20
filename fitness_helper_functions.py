@@ -18,31 +18,40 @@ def get_millis_date(datetime1):
 	""" Takes in a datetime object and returns milliseconds from epoch """
 	return int(round(time.mktime(datetime1.timetuple()) * 1000))
 	
-def get_aggregate_steps(goal, service):
+def get_aggregate(goal, service):
 	millisstart = get_millis_date(goal.valid_from)
 	millisend = get_millis_date(goal.valid_to)
 	delta = millisend - millisstart
-	agg = service.users().dataset().aggregate(userId="me",
-						body={"aggregateBy":[{
+	if goal.goal_type == "Steps":
+		aggregateBy = [{
 			    	"dataTypeName": "com.google.step_count.delta",
 			    	"dataSourceId": "derived:com.google.step_count.delta:com.google.android.gms:estimated_steps"
-			  		}],
+			  		}]
+	elif goal.goal_type == "Calories":
+		aggregateBy = [{"dataTypeName": "com.google.calories.expended"}]
+	agg = service.users().dataset().aggregate(userId="me",
+						body={"aggregateBy":aggregateBy,
 			  		"bucketByTime": { "durationMillis": delta }, # This is 24 hours
 			  		"startTimeMillis": millisstart, #start time
 			  		"endTimeMillis": millisend # End Time
 			  		})
 	return agg
 
-def update_goal_status_steps(user, service):
+
+def update_goal_status(user, service):
 	goals = user.get_unresolved_goals()
 	for goal in goals:
-			if goal.goal_type == "Steps":
-				agg = get_aggregate_steps(goal, service)	
+			# if goal.goal_type == "Steps":
+				agg = get_aggregate(goal, service)	
 				if len(agg.execute()['bucket'][0]['dataset'][0]['point']) == 0:
 					return "No data"
 				else:
+					if goal.goal_type == "Steps":
+						column = "intVal"
+					elif goal.goal_type == "Calories":
+						column = "fpVal"
 					#print "Hooray you have done %s Steps" % agg.execute()['bucket'][0]['dataset'][0]['point'][0]['value'][0]['intVal']
-					value = agg.execute()['bucket'][0]['dataset'][0]['point'][0]['value'][0]['intVal']
+					value = agg.execute()['bucket'][0]['dataset'][0]['point'][0]['value'][0][column]
 					goalprogress = GoalStatus(goal_id = goal.goal_id, date_recorded = datetime.datetime.now(), value=value)
 					db.session.add(goalprogress)
 					db.session.commit()

@@ -113,7 +113,7 @@ def auth_ret():
 	if session.get("user_id"):
 		user = User.query.get(int(session.get("user_id")))
 		
-		fhf.update_goal_status_steps(user, service)
+		fhf.update_goal_status(user, service)
 		if user.get_unresolved_overdue_goals():
 			print "Unresolved goals", user.get_unresolved_overdue_goals()
 			return redirect("/outcome")
@@ -233,7 +233,8 @@ def goal_graph():
 		goals = user.get_current_goals()
 		goal_dict = {}
 		for goal in goals:
-			goal_dict[goal.goal_id] = goal.get_status_series()
+			goal_dict[goal.goal_id] = {"series": goal.get_status_series(), "valid_from": goal.valid_from.strftime("%Y-%m-%d %H:%M:%S"),
+										"valid_to": goal.valid_to.strftime("%Y-%m-%d %H:%M:%S"),"value":goal.value}
 		return jsonify(goal_dict)
 	else:
 		return jsonify({})			                                                 

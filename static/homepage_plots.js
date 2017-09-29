@@ -1,7 +1,5 @@
 "use strict";
 
-console.log("Hello World");
-
 
 $.get("/goal_graph.json", function (result){
 	if (Object.keys(result).length > 0){
@@ -9,24 +7,38 @@ $.get("/goal_graph.json", function (result){
 		for (var prop in result){
 			var date = [];
 			var value = [];
-			for (var j = 0; j<result[prop].length; j++){
-				var date_string = result[prop][j][0].substr(5,15);
-				var status_date = new Date(date_string)
+			for (var j = 0; j<result[prop]["series"].length; j++){
+				var date_string = result[prop]["series"][j][0].substr(5,15);
+				var status_date = new Date(date_string);
 				date.push(status_date);
-				value.push(result[prop][j][1]);
+				value.push(result[prop]["series"][j][1]);
 			}
 		var trace1 = {
   			x: date,
   			y: value,
-  			type: 'scatter'
+  			type: 'scatter',
+  			mode: 'lines'
 			};
 
+		var valid_from_string = result[prop]["valid_from"];
+		var valid_from = new Date(valid_from_string);
+		console.log(valid_from);
+		var valid_to_string = result[prop]["valid_to"];
+		var valid_to = new Date(valid_to_string);
+		console.log(valid_to);
+		var goal_value = result[prop]["value"];
 		// data.push(trace1)
-		Plotly.newPlot('graph-div'+prop, [trace1]);		
-		}
+		var layout = {
+  		xaxis: {range: [valid_from_string, valid_to_string],
+  		type: 'date'},
+  		yaxis: {range: [0, goal_value]}
+		};
+
+		Plotly.newPlot('graph-div'+prop, [trace1], layout);		
+		};
 			
 
-	}
+	};
 
 });
 

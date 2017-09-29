@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 import datetime
+import random
 
 
 db = SQLAlchemy()
@@ -175,7 +176,7 @@ class Goal(db.Model):
         db.session.commit()
 
     def make_goal_info_dictionary(self):
-        return {"username": self.user.username,"achieved": True, "goal_type": self.goal_type, "goal_value" : self.value,
+        return {"username": self.user.username, "goal_type": self.goal_type, "goal_value" : self.value,
                               "valid_from": self.valid_from, "valid_to" : self.valid_to,
                               "goal_id": self.goal_id, "xp": self.xp, "current_xp": self.user.get_current_status().current_xp,
                               "current_level": self.user.get_current_status().level}

@@ -1,6 +1,6 @@
 from model import UserStatus, db
-
-
+import random
+import datetime
 
 def get_outcome_dict(user):
 	
@@ -15,6 +15,8 @@ def get_outcome_dict(user):
 		current_status = goal.get_current_status()
 		if current_status.value >= goal.value:
 			# good things happen
+			goal_info_dict = goal.make_goal_info_dictionary()
+			goal_info_dict["achieved"] = True
 			goal_list.append(goal.make_goal_info_dictionary())
 			new_xp += goal.xp
 			goal.resolved = "Y"
@@ -30,6 +32,7 @@ def get_outcome_dict(user):
 						                "damage_type": attack.damage_type,
 						                "damage_val": damage_val
 						                }
+			goal_info_dict["achieved"] = False			                
 			goal_list.append(goal_info_dict)
 			new_hp -= damage_val
 

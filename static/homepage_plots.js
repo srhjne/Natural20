@@ -21,10 +21,10 @@ $.get("/goal_graph.json", function (result){
   			type: 'scatter'
 			};
 
-		data.push(trace1)
-				
+		// data.push(trace1)
+		Plotly.newPlot('graph-div'+prop, [trace1]);		
 		}
-		Plotly.newPlot('graph-div'+prop, data);	
+			
 
 	}
 

@@ -3,15 +3,17 @@
 {%block content%}
 <div class=container>
 <h1 id="welcome"> Welcome, {{username}}! </h1>
-<div class = "col-md-3 col-xs-12">
+<div class = "col-md-4 col-xs-12">
 <div id="stats">
-Current Stats: <br>
+<div id="stats-text">
+<b>Current Stats</b> <br>
 Level: {{level}} <br>
 XP: {{xp}} <br>
 HP: {{hp}} <br>
 </div>
 </div>
-<div id="goal_stats" class = "col-md-9 col-xs-12">
+</div>
+<div id="goal_stats" class = "col-md-8 col-xs-12">
 {%for date, value, ratio, goal in goalstatus %}
 <div class="figures_div">
 Your current quest is to complete {{goal.value}} {{goal.goal_type}} by {{goal.valid_to}} <br>
@@ -25,6 +27,7 @@ You are currently at {{value}} {{goal.goal_type}} as of {{date}}
 <div id="graph-div{{goal.goal_id}}" style="width:600px;height:250px;">
 </div>
 </div>
+<br>
 {%endfor%}
 </div>
 <br>

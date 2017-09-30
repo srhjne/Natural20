@@ -17,7 +17,8 @@ $.get("/goal_graph.json", function (result){
   			x: date,
   			y: value,
   			type: 'scatter',
-  			mode: 'lines'
+  			mode: 'lines',
+  			name: 'goal progress'
 			};
 
 		var valid_from_string = result[prop]["valid_from"];
@@ -33,7 +34,8 @@ $.get("/goal_graph.json", function (result){
   		type: 'date'},
   		yaxis: {range: [0, goal_value]},
   		paper_bgcolor: 'rgba(0,0,0,0)',
-  		plot_bgcolor: 'rgba(0,0,0,0)'
+  		plot_bgcolor: 'rgba(0,0,0,0)',
+  		text: {family: 'Jim Nightshade'}
 		};
 
 		Plotly.newPlot('graph-div'+prop, [trace1], layout);		

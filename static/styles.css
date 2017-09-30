@@ -8,16 +8,24 @@ h1 {
 	font-size: 70px;
 }
 
-.navbar-brand {
+.navbar-default .navbar-brand {
 	font-family: dungeonsFont;
 	font-size:30px;
+	color: #baa975;
 }
 
-#stats{
-	border: solid 3px black;
-	border-radius: 5px;
-	padding: 10px;
+.navbar.navbar-default {
+	background-color:   #642205;
+	color: #baa975;
+	border-color:  #642205
+;
 }
+
+.navbar.navbar-default li a {
+	color: #baa975;
+}
+
+
 
 #goal_stats .figures_div {
 	border: solid 3px black;
@@ -34,14 +42,30 @@ h1 {
 
 form {
 	margin: 20px;
-	font-size: 20px
+	font-size: 30px
 }
 
 #calc_xp {
-	font-size: 20px;
+	font-size: 30px;
 }
 
 body {
 	background-color: #baa975;
-	background-image: url("/static/light-paper-fibers.png")
+	background-image: url("/static/light-paper-fibers.png");
+	font-family: 'Jim Nightshade', cursive;
+	font-size: 30px;
+}
+
+#stats {
+	background-image: url("/static/scroll.png");
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	padding: 20px;
+}
+
+#stats-text {
+	margin-left: auto;
+	margin-right: auto;
+	width: 60%;
+	margin-top:40px;
 }

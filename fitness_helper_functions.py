@@ -41,6 +41,7 @@ def get_aggregate(goal, service):
 def update_goal_status(user, service):
 	goals = user.get_unresolved_goals()
 	for goal in goals:
+				print goal
 			# if goal.goal_type == "Steps":
 				agg = get_aggregate(goal, service)	
 				if len(agg.execute()['bucket'][0]['dataset'][0]['point']) == 0:
@@ -53,6 +54,7 @@ def update_goal_status(user, service):
 					#print "Hooray you have done %s Steps" % agg.execute()['bucket'][0]['dataset'][0]['point'][0]['value'][0]['intVal']
 					value = agg.execute()['bucket'][0]['dataset'][0]['point'][0]['value'][0][column]
 					goalprogress = GoalStatus(goal_id = goal.goal_id, date_recorded = datetime.datetime.now(), value=value)
+					print value
 					db.session.add(goalprogress)
 					db.session.commit()
 

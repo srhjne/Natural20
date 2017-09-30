@@ -2,6 +2,7 @@ from server import app, flow
 # from oauth2client.client import OAuth2WebServerFlow
 import httplib2
 from apiclient.discovery import build
+from oauth2client.file import Storage
 
 from flask import jsonify, render_template, redirect, request, flash, session
 
@@ -106,6 +107,9 @@ def login():
 def auth_ret():
 	code = request.args.get("code")
 	credentials = flow.step2_exchange(code)
+	storage = Storage('credentials%s.dat' % (session.get("user_id")))
+	storage.put(credentials)
+
 	http = httplib2.Http()
 	http = credentials.authorize(http)
 	service = build('fitness', 'v1', http=http)

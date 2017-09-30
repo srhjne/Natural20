@@ -31,7 +31,9 @@ $.get("/goal_graph.json", function (result){
 		var layout = {
   		xaxis: {range: [valid_from_string, valid_to_string],
   		type: 'date'},
-  		yaxis: {range: [0, goal_value]}
+  		yaxis: {range: [0, goal_value]},
+  		paper_bgcolor: 'rgba(0,0,0,0)',
+  		plot_bgcolor: 'rgba(0,0,0,0)'
 		};
 
 		Plotly.newPlot('graph-div'+prop, [trace1], layout);		

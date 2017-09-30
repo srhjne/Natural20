@@ -40,3 +40,8 @@ form {
 #calc_xp {
 	font-size: 20px;
 }
+
+body {
+	background-color: #baa975;
+	background-image: url("/static/light-paper-fibers.png")
+}

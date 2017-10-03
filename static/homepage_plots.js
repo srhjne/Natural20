@@ -10,7 +10,8 @@ $.get("/goal_graph.json", function (result){
 			if (result[prop]["frequency"] === "Daily"){
 				for (var day in result[prop]["series"]){
 					console.log(day)
-					var date_string = result[prop]["series"][day]["date_recorded"].substr(5,15);
+					var date_string = result[prop]["series"][day]["date_recorded"].substr(5,12);
+					console.log(date_string);
 					var status_date = new Date(date_string);
 					console.log("status_date"+status_date)
 					date.push(status_date);
@@ -20,6 +21,7 @@ $.get("/goal_graph.json", function (result){
 			var trace1 = {
   			x: date,
   			y: value,
+  			width: 1000*60*60*23,
   			type: 'bar',
   			name: 'goal progress'
 			};
@@ -29,7 +31,11 @@ $.get("/goal_graph.json", function (result){
 			var valid_to = new Date(valid_to_string);
 			var goal_value = result[prop]["value"];
 			// data.push(trace1)
+			console.log(valid_from_string);
+			console.log(valid_to_string);
 			var layout = {
+			xaxis: {range: [valid_from_string, valid_to_string],
+	  		type: 'date'},
 	  		yaxis: {range: [0, goal_value]},
 	  		paper_bgcolor: 'rgba(0,0,0,0)',
 	  		plot_bgcolor: 'rgba(0,0,0,0)',
@@ -47,7 +53,7 @@ $.get("/goal_graph.json", function (result){
 			} else {
 
 				for (var j = 0; j<result[prop]["series"].length; j++){
-					var date_string = result[prop]["series"][j]["date_recorded"].substr(5,15);
+					var date_string = result[prop]["series"][j]["date_recorded"].substr(5,19);
 					console.log(result[prop]["series"][j])
 					var status_date = new Date(date_string);
 					date.push(status_date);

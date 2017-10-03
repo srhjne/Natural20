@@ -19,8 +19,22 @@ HP: {{hp}} <br>
 {%if goalstatus%}
 {%for date, value, ratio, goal in goalstatus %}
 <div class="figures_div">
-Your current quest is to complete {{goal.value}} {{goal.goal_type}} by {{goal.valid_to.strftime("%I:%M%p %B %d, %Y")}} <br>
-You are currently at {{value}} {{goal.goal_type}} as of {{date}}
+Your current quest is to complete {{goal.value}} {{goal.goal_type}}
+{%if goal.frequency == "Daily"%}
+per day until
+{%else%}
+ by 
+ {%endif%}
+ {{goal.valid_to.strftime("%I:%M%p %B %d, %Y")}} <br>
+
+
+You are currently
+{%if goal.frequency == "Daily"%}
+averaging
+{%else%}
+at 
+ {%endif%}
+{{value}} {{goal.goal_type}} as of {{date}}
  <div class="progress" id={{goal.goal_id}}>
   <div class="progress-bar" role="progressbar" aria-valuenow={{value}}
   aria-valuemin="0" aria-valuemax={{goal.value}} style="width:{{ratio}}%">

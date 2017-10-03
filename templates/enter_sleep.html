@@ -1,0 +1,23 @@
+{%extends 'base.html'%}
+
+{% block title %} Natural 20 Enter sleep {%endblock%}
+
+{%block content%}
+<form id="sleep_time" action="/enter_sleep" method="POST">
+<table>
+<tr>
+<td>
+ Bedtime</td><td> <input name="bedtime" type="time"> </td> </tr>
+ <tr>
+ <td>
+ Wake up time </td><td><input name="waketime" type="time">
+ </td></tr>
+ <tr>
+ <td>
+ <input type="submit" value="Record sleep">
+ </td>
+ </tr>
+
+</table>
+</form>
+{%endblock%}

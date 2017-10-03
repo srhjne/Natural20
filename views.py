@@ -48,8 +48,13 @@ def profile_page(username):
 			progresses = []
 			goals = user.get_current_goals()
 			for goal in goals:
-				progress = goal.get_current_status()
-				progresses.append([progress.date_recorded, progress.value, 100.0*progress.value/goal.value, goal])
+				if goal.frequency == "Daily":
+					mean_value = goal.get_mean_value_daily()
+					progress = goal.get_current_status()
+					progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), mean_value, 100.0*progress.value/goal.value, goal])
+				else:
+					progress = goal.get_current_status()
+					progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), progress.value, 100.0*progress.value/goal.value, goal])
 
 
 			return render_template("user_page.html", username=username,  
@@ -168,8 +173,9 @@ def calc_xp():
 	valid_to_u = request.args.get("valid_to")
 	valid_to = datetime.datetime.strptime(valid_to_u, "%Y-%m-%d")
 	value = request.args.get("value")
+	frequency = request.args.get("frequency")
 	
-	xp = user.calc_xp(goal_value, valid_from, valid_to, goal_type)
+	xp = user.calc_xp(goal_value, valid_from, valid_to, goal_type, frequency)
 
 	return jsonify({"xp":xp})
 
@@ -192,14 +198,21 @@ def set_goal_db():
 		valid_from = datetime.datetime.strptime(valid_from_u, "%Y-%m-%d")
 		valid_to_u = request.form.get("valid_to")
 		valid_to = datetime.datetime.strptime(valid_to_u, "%Y-%m-%d")
+		frequency = request.form.get("frequency")
 		
-		xp = user.calc_xp(goal_value, valid_from, valid_to, goal_type)
+		xp = user.calc_xp(goal_value, valid_from, valid_to, goal_type, frequency)
+
+		if goal_type == "Sleep":
+			goal_value = goal_value*60*60
 			
-		goal = Goal(user_id=user.user_id, xp=xp, goal_type=goal_type, value=goal_value, valid_from=valid_from, valid_to=valid_to )
+		goal = Goal(user_id=user.user_id, xp=xp, goal_type=goal_type, value=goal_value, valid_from=valid_from, valid_to=valid_to, frequency=frequency )
 		goal.commit_goal()
 		GoalStatus.make_first_status(goal_type, valid_from, valid_to, goal_value, xp, user.user_id)
-		auth_uri = flow.step1_get_authorize_url()
-		return redirect(auth_uri)
+		if goal_type in ("Steps", "Calories"):
+			auth_uri = flow.step1_get_authorize_url()
+			return redirect(auth_uri)
+		elif goal_type in ("Sleep"):
+			return redirect("user/%s"%user.username)
 		
 
 @app.route('/login', methods=["POST"])
@@ -237,9 +250,59 @@ def goal_graph():
 		goals = user.get_current_goals()
 		goal_dict = {}
 		for goal in goals:
-			goal_dict[goal.goal_id] = {"series": goal.get_status_series(), "valid_from": goal.valid_from.strftime("%Y-%m-%d %H:%M:%S"),
-										"valid_to": goal.valid_to.strftime("%Y-%m-%d %H:%M:%S"),"value":goal.value}
+			if goal.frequency == "Daily":
+				series = goal.get_daily_status_series()
+				print series
+			else:
+				series = goal.get_status_series()
+				print series
+			goal_dict[goal.goal_id] = {"series": series, "valid_from": goal.valid_from.strftime("%Y-%m-%d %H:%M:%S"),
+										"valid_to": goal.valid_to.strftime("%Y-%m-%d %H:%M:%S"),"value":goal.value,
+										"frequency": goal.frequency}
 		return jsonify(goal_dict)
 	else:
-		return jsonify({})			                                                 
+		return jsonify({})	
 
+@app.route("/settings")
+def settings():
+	if session.get("user_id"):
+		user = User.query.get(session["user_id"])
+		return render_template("settings.html", user=user)
+	else:
+		flash("You must be logged in to view this")
+		return redirect("/login")	
+
+@app.route("/update_settings.json", methods = ["POST"])
+def update_settings():
+	if session.get("user_id"):
+		user = User.query.get(session["user_id"])
+		email = request.form.get("email", None)
+		password = request.form.get("password", None)
+		old_password = request.form.get("old_password", None)
+		if password and user.password != old_password:
+			return jsonify(None)
+		print email
+		user.update_setting(email=email, password=password)
+		print user.email, user.password
+		return jsonify({"email": user.email, "password": user.password})
+	else:
+		return jsonify(None)	
+
+
+@app.route("/enter_sleep")
+def enter_sleep():
+	fhf.check_session()
+	return render_template("enter_sleep.html")
+
+@app.route("/enter_sleep", methods=["POST"])
+def record_sleep():
+	fhf.check_session()
+	bedtime = request.form.get("bedtime")
+	waketime = request.form.get("waketime")
+	user = User.query.get(session["user_id"])
+	sleep_goals = user.get_current_sleep_goals()
+	for goal in sleep_goals:
+		fhf.save_sleep_goal_status(goal,bedtime, waketime, frequency=goal.frequency)
+		print bedtime, type(bedtime), dir(bedtime)
+	return redirect("user/%s"%user.username)
+	

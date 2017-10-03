@@ -12,11 +12,14 @@ XP: {{xp}} <br>
 HP: {{hp}} <br>
 </div>
 </div>
+<br>
+<br>
 </div>
 <div id="goal_stats" class = "col-md-8 col-xs-12">
+{%if goalstatus%}
 {%for date, value, ratio, goal in goalstatus %}
 <div class="figures_div">
-Your current quest is to complete {{goal.value}} {{goal.goal_type}} by {{goal.valid_to}} <br>
+Your current quest is to complete {{goal.value}} {{goal.goal_type}} by {{goal.valid_to.strftime("%I:%M%p %B %d, %Y")}} <br>
 You are currently at {{value}} {{goal.goal_type}} as of {{date}}
  <div class="progress" id={{goal.goal_id}}>
   <div class="progress-bar" role="progressbar" aria-valuenow={{value}}
@@ -29,6 +32,12 @@ You are currently at {{value}} {{goal.goal_type}} as of {{date}}
 </div>
 <br>
 {%endfor%}
+{%else%}
+<div class="no-goals">
+You don't currently have any quests.<br>
+<a href="/set_goal"> Set a new Goal </a>
+</div>
+{%endif%}
 </div>
 <br>
 

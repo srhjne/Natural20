@@ -6,6 +6,7 @@ from oauth2client.file import Storage
 import httplib2
 
 import time
+import datetime
 
 from server import app
 
@@ -49,8 +50,9 @@ def main():
 connect_to_db(app)
 db.create_all()
 while True:
-	time.sleep(15*60)
+	time.sleep(20*60)
 	try:
 		main()
 	except Exception:
+		print "Error", datetime.datetime.now()
 		continue

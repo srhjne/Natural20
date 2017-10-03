@@ -12,8 +12,12 @@ def get_outcome_dict(user):
 
 	goals = user.get_unresolved_overdue_goals()
 	for goal in goals:
-		current_status = goal.get_current_status()
-		if current_status.value >= goal.value:
+		if goal.frequency != "Daily":
+			current_status = goal.get_current_status()
+			comp_value = current_status.value
+		else:
+			comp_value = goal.get_mean_value_daily()
+		if comp_value >= goal.value:
 			# good things happen
 			goal_info_dict = goal.make_goal_info_dictionary()
 			goal_info_dict["achieved"] = True

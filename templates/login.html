@@ -5,7 +5,11 @@
 {%block content%}
 <div class="container">
 {% for message in get_flashed_messages()%}
-<div class="flashed_messages">
+{%if message == "Thanks for registering!"%}
+<div class="alert alert-success" role="alert">
+{%else%}
+<div class="alert alert-danger" role="alert">
+{%endif%}
 {{message}}
 </div>
 {%endfor%}

@@ -102,8 +102,12 @@ class User(db.Model):
         goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_to < datetime.datetime.now(), Goal.resolved.is_(None)).all()
         return goals
 
-    def calc_xp(self, goal_value, valid_from, valid_to, goal_type="Steps"):
+    def calc_xp(self, goal_value, valid_from, valid_to, goal_type="Steps", frequency="Total"):
         timedelta = (valid_to - valid_from).total_seconds()
+        if frequency == "Daily":
+            days = timedelta/(24*60*60)
+            goal_value = goal_value*days
+        
         scaled_value_test = goal_value/timedelta
 
         xp = 500
@@ -144,6 +148,18 @@ class User(db.Model):
         db.session.add(userstatus)
         db.session.commit()
 
+
+    def update_setting(self, password=False, email=False):
+        if password:
+            self.password = password
+        if email:
+            self.email = email
+        db.session.commit()
+
+    def get_current_sleep_goals(self):
+        return [goal for goal in user.goal if goal.goal_type=="Sleep" and not goal.resolved and goal.valid_to > datetime.datetime.now()]
+    
+
 class Goal(db.Model):
 
     __tablename__ = "goals"
@@ -155,6 +171,7 @@ class Goal(db.Model):
     valid_to = db.Column(db.TIMESTAMP, nullable=True)
     value = db.Column(db.Integer, nullable=False)
     xp = db.Column(db.Integer, nullable=False)
+    frequency = db.Column(db.String(7), nullable=True)
     resolved = db.Column(db.String(1), nullable=True)
 
     user = db.relationship("User", backref=db.backref("goal", order_by=valid_to))
@@ -167,9 +184,26 @@ class Goal(db.Model):
     def get_current_status(self):
         return self.goalstatus[-1]
 
-    def get_status_series(self):
-        statuses = sorted([(status.date_recorded, status.value) for status in self.goalstatus])
+    def get_status_last_6hours(self):
+        statuses = [status for status in self.goalstatus if (datetime.datetime.now() - status.date_recorded).total_seconds() < 60*60*6 ]
         return statuses
+
+    def get_status_series(self):
+        statuses = sorted([{"date_recorded":status.date_recorded, "value":status.value} for status in self.goalstatus])
+        return statuses
+
+    def get_daily_status_series(self):
+        status_series = {}
+        for status in self.goalstatus:
+            day_recorded = status.date_recorded.strftime("%Y-%m-%d")
+            status_series[day_recorded] = {"value": status.value, "date_recorded": status.date_recorded}
+        return status_series
+
+    def get_mean_value_daily(self):
+        daily_progress = self.get_daily_status_series()
+        daily_values = [daily_progress[status]['value'] for status in daily_progress]
+        return sum(daily_values)/float(len(daily_values))
+
 
     def commit_goal(self):
         db.session.add(self)
@@ -203,6 +237,8 @@ class GoalStatus(db.Model):
         gs = cls(goal_id=goal_db.goal_id,value=0,date_recorded=valid_from)
         db.session.add(gs)
         db.session.commit()
+
+   
 
 
 class  UserStatus(db.Model):

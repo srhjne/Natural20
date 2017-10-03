@@ -66,6 +66,10 @@ body {
 #stats-text {
 	margin-left: auto;
 	margin-right: auto;
-	width: 60%;
+	width: 50%;
 	margin-top:40px;
+}
+
+div.alert {
+	display: inline;
 }

@@ -51,10 +51,16 @@ def profile_page(username):
 				if goal.frequency == "Daily":
 					mean_value = goal.get_mean_value_daily()
 					progress = goal.get_current_status()
-					progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), mean_value, 100.0*progress.value/goal.value, goal])
+					if goal.goal_type == "Sleep":
+						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), mean_value/(60.0*60), 100.0*progress.value/goal.value, goal])
+					else:
+						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), mean_value, 100.0*progress.value/goal.value, goal])
 				else:
 					progress = goal.get_current_status()
-					progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), progress.value, 100.0*progress.value/goal.value, goal])
+					if goal.goal_type == "Sleep":
+						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), progress.value/(60.0*60), 100.0*progress.value/goal.value, goal])
+					else:
+						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), progress.value, 100.0*progress.value/goal.value, goal])
 
 
 			return render_template("user_page.html", username=username,  

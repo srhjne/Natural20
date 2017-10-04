@@ -157,7 +157,7 @@ class User(db.Model):
         db.session.commit()
 
     def get_current_sleep_goals(self):
-        return [goal for goal in user.goal if goal.goal_type=="Sleep" and not goal.resolved and goal.valid_to > datetime.datetime.now()]
+        return [goal for goal in self.goal if goal.goal_type=="Sleep" and not goal.resolved and goal.valid_to > datetime.datetime.now()]
     
 
 class Goal(db.Model):
@@ -197,6 +197,9 @@ class Goal(db.Model):
         for status in self.goalstatus:
             day_recorded = status.date_recorded.strftime("%Y-%m-%d")
             status_series[day_recorded] = {"value": status.value, "date_recorded": status.date_recorded}
+            if self.goal_type == "Sleep":
+                status_series[day_recorded]["bedtime"] = status.sleepstatus.bedtime.strftime("%H:%M")
+                status_series[day_recorded]["waketime"] = status.sleepstatus.waketime.strftime("%H:%M")
         return status_series
 
     def get_mean_value_daily(self):
@@ -271,6 +274,21 @@ class  UserStatus(db.Model):
         db.session.add(new_status)
         db.session.commit()
 
+
+class SleepStatus(db.Model):
+
+    __tablename__ = "sleepstatuses"
+
+    goalstatus_id = db.Column(db.Integer, db.ForeignKey("goalstatuses.goalstatus_id"), primary_key=True)
+    bedtime = db.Column(db.TIMESTAMP, nullable=False)
+    waketime = db.Column(db.TIMESTAMP, nullable=False)
+
+
+
+    goalstatus = db.relationship('GoalStatus', backref="sleepstatus")
+
+    def __repr__(self):
+        return "<Sleep status id=%s, bedtime=%s, waketime=%s"%(goalstatus_id,bedtime.strftime("%H:%M"), waketime.strftime("%H:%M"))
 
 
 

@@ -19,7 +19,7 @@ HP: {{hp}} <br>
 {%if goalstatus%}
 {%for date, value, ratio, goal in goalstatus %}
 <div class="figures_div">
-Your current quest is to complete {{goal.value}} {{goal.goal_type}}
+Your current quest is to complete {%if goal.goal_type == "Sleep"%}{{goal.value/(60.0*60.0)}} hours of {%else%}{{goal.value}}{%endif%} {{goal.goal_type}}
 {%if goal.frequency == "Daily"%}
 per day until
 {%else%}

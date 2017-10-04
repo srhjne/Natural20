@@ -7,6 +7,8 @@ $.get("/goal_graph.json", function (result){
 		for (var prop in result){
 			var date = [];
 			var value = [];
+			var bedtime = [];
+			var waketime = [];
 			if (result[prop]["frequency"] === "Daily"){
 				for (var day in result[prop]["series"]){
 					console.log(day)
@@ -16,6 +18,10 @@ $.get("/goal_graph.json", function (result){
 					console.log("status_date"+status_date)
 					date.push(status_date);
 					value.push(result[prop]["series"][day]["value"]);
+					if ("bedtime" in result[prop]["series"][day]){
+						bedtime.push(result[prop]["series"][day]['bedtime'])
+						waketime.push(result[prop]["series"][day]['waketime'])
+					}
 				}
 		
 			var trace1 = {
@@ -25,6 +31,15 @@ $.get("/goal_graph.json", function (result){
   			type: 'bar',
   			name: 'goal progress'
 			};
+			if (bedtime.length > 0 ){
+				var trace2 = {
+					x: date,
+					y: bedtime,
+					type: 'scatter',
+					yaxis: 'y2'
+				}
+			}
+
 			var valid_from_string = result[prop]["valid_from"];
 			var valid_from = new Date(valid_from_string);
 			var valid_to_string = result[prop]["valid_to"];
@@ -37,6 +52,9 @@ $.get("/goal_graph.json", function (result){
 			xaxis: {range: [valid_from_string, valid_to_string],
 	  		type: 'date'},
 	  		yaxis: {range: [0, goal_value]},
+	  		yaxis2: {overlaying: 'y',
+    				side: 'right'
+  					},
 	  		paper_bgcolor: 'rgba(0,0,0,0)',
 	  		plot_bgcolor: 'rgba(0,0,0,0)',
 	  		margin: {

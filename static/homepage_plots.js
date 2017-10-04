@@ -31,13 +31,18 @@ $.get("/goal_graph.json", function (result){
   			type: 'bar',
   			name: 'goal progress'
 			};
+			var plot_data = [trace1]
+
 			if (bedtime.length > 0 ){
 				var trace2 = {
 					x: date,
 					y: bedtime,
 					type: 'scatter',
-					yaxis: 'y2'
+					mode: "lines+markers",
+					yaxis: 'y2',
+					name: "bedtime"
 				}
+				plot_data = [trace1, trace2]
 			}
 
 			var valid_from_string = result[prop]["valid_from"];
@@ -67,7 +72,7 @@ $.get("/goal_graph.json", function (result){
 	  		title: false
 			};
 
-			Plotly.newPlot('graph-div'+prop, [trace1], layout);
+			Plotly.newPlot('graph-div'+prop, plot_data, layout);
 			} else {
 
 				for (var j = 0; j<result[prop]["series"].length; j++){

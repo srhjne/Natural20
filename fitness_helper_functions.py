@@ -99,29 +99,8 @@ def check_session():
 		flash("You must be logged in to view this")
 		return redirect("/login")
 
-def get_sleep_time_from_strings(bedtime, waketime):
-	bedtime = datetime.datetime.strptime(bedtime, "%H:%M")
-	waketime = datetime.datetime.strptime(waketime, "%H:%M")
-	delta = bedtime - waketime
-	sleep_seconds = 24*60*60 - delta.total_seconds()
-	return sleep_seconds, bedtime, waketime
 
 
-def save_sleep_goal_status(goal,bedtime, waketime, frequency="Total"):
-	sleep_seconds, bedtime, waketime = get_sleep_time_from_strings(bedtime,waketime)
-	most_recent_status = goal.get_current_status()
-	last_night=datetime.datetime.strptime(datetime.datetime.now().strftime("%Y-%m-%d"),"%Y-%m-%d")
-	if frequency != "Daily":
-		value = most_recent_status.value+sleep_seconds
-	else:
-		value = sleep_seconds
-	gs = GoalStatus(goal_id=goal.goal_id, date_recorded=last_night, value=value)
-	db.session.add(gs)
-	db.session.commit()
-	gs = GoalStatus.query.filter(GoalStatus.goal_id==goal.goal_id, GoalStatus.date_recorded==last_night, GoalStatus.value==value).first()
-	ss = SleepStatus(goalstatus_id = gs.goalstatus_id, bedtime=bedtime, waketime=waketime)
-	db.session.add(ss)
-	db.session.commit()
 
 
 

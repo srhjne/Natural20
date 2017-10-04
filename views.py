@@ -6,7 +6,7 @@ from oauth2client.file import Storage
 
 from flask import jsonify, render_template, redirect, request, flash, session
 
-from model import User, Goal, GoalStatus, UserStatus, Monster, Attack, LevelLookup
+from model import User, Goal, GoalStatus, UserStatus, Monster, Attack, LevelLookup, SleepStatus
 
 import os
 import datetime
@@ -213,7 +213,10 @@ def set_goal_db():
 			
 		goal = Goal(user_id=user.user_id, xp=xp, goal_type=goal_type, value=goal_value, valid_from=valid_from, valid_to=valid_to, frequency=frequency )
 		goal.commit_goal()
-		GoalStatus.make_first_status(goal_type, valid_from, valid_to, goal_value, xp, user.user_id)
+		if goal_type != "Sleep":
+			GoalStatus.make_first_status(goal_type, valid_from, valid_to, goal_value, xp, user.user_id)
+		else:
+			SleepStatus.make_first_sleep_status(goal_type, valid_from, valid_to, goal_value, xp, user.user_id, frequency)
 		if goal_type in ("Steps", "Calories"):
 			auth_uri = flow.step1_get_authorize_url()
 			return redirect(auth_uri)
@@ -308,7 +311,7 @@ def record_sleep():
 	user = User.query.get(session["user_id"])
 	sleep_goals = user.get_current_sleep_goals()
 	for goal in sleep_goals:
-		fhf.save_sleep_goal_status(goal,bedtime, waketime, frequency=goal.frequency)
+		SleepStatus.save_sleep_goal_status(goal,bedtime, waketime, frequency=goal.frequency)
 		print bedtime, type(bedtime), dir(bedtime)
 	return redirect("user/%s"%user.username)
 	

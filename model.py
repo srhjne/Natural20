@@ -3,6 +3,7 @@ import datetime
 import random
 
 
+
 db = SQLAlchemy()
 
 
@@ -198,8 +199,8 @@ class Goal(db.Model):
             day_recorded = status.date_recorded.strftime("%Y-%m-%d")
             status_series[day_recorded] = {"value": status.value, "date_recorded": status.date_recorded}
             if self.goal_type == "Sleep":
-                status_series[day_recorded]["bedtime"] = status.sleepstatus.bedtime.strftime("%H:%M")
-                status_series[day_recorded]["waketime"] = status.sleepstatus.waketime.strftime("%H:%M")
+                status_series[day_recorded]["bedtime"] = status.sleepstatus[0].bedtime.strftime("%H:%M")
+                status_series[day_recorded]["waketime"] = status.sleepstatus[0].waketime.strftime("%H:%M")
         return status_series
 
     def get_mean_value_daily(self):
@@ -285,12 +286,45 @@ class SleepStatus(db.Model):
 
 
 
-    goalstatus = db.relationship('GoalStatus', backref="sleepstatus")
+    goalstatus = db.relationship('GoalStatus', backref=db.backref("sleepstatus"))
 
     def __repr__(self):
         return "<Sleep status id=%s, bedtime=%s, waketime=%s"%(goalstatus_id,bedtime.strftime("%H:%M"), waketime.strftime("%H:%M"))
 
+    @classmethod
+    def save_sleep_goal_status(cls, goal ,bedtime, waketime, frequency="Total", date_recorded=None, first=False):
+        sleep_seconds, bedtime, waketime = cls.get_sleep_time_from_strings(bedtime,waketime)
+        
+        if not date_recorded:
+            date_recorded=datetime.datetime.strptime(datetime.datetime.now().strftime("%Y-%m-%d"),"%Y-%m-%d")
+        if frequency != "Daily" and not first:
+            most_recent_status = goal.get_current_status()
+            value = most_recent_status.value+sleep_seconds
+        else:
+            value = sleep_seconds
+        gs = GoalStatus(goal_id=goal.goal_id, date_recorded=date_recorded, value=value)
+        db.session.add(gs)
+        db.session.commit()
+        gs = GoalStatus.query.filter(GoalStatus.goal_id==goal.goal_id, GoalStatus.date_recorded==date_recorded, GoalStatus.value==value).first()
+        ss = cls(goalstatus_id = gs.goalstatus_id, bedtime=bedtime, waketime=waketime)
+        db.session.add(ss)
+        db.session.commit()
 
+    @staticmethod
+    def get_sleep_time_from_strings(bedtime, waketime):
+        bedtime = datetime.datetime.strptime(bedtime, "%H:%M")
+        waketime = datetime.datetime.strptime(waketime, "%H:%M")
+        delta = bedtime - waketime
+        sleep_seconds = 24*60*60 - delta.total_seconds()
+        return sleep_seconds, bedtime, waketime
+
+
+
+    @classmethod
+    def make_first_sleep_status(cls, goal_type, valid_from, valid_to, goal_value, xp, user_id, frequency):
+        goal_db = Goal.query.filter(Goal.user_id==user_id, Goal.xp==xp, Goal.goal_type==goal_type, Goal.value==goal_value, Goal.valid_from==valid_from, Goal.valid_to==valid_to).first()
+        print goal_db
+        cls.save_sleep_goal_status(goal_db, "00:00", "00:00", frequency)
 
 
 

@@ -52,9 +52,9 @@ def update_goal_status(user, service):
 					continue
 				print goal
 				most_recent_status = goal.get_current_status()
-				last_6hours = goal.get_status_last_6hours()
+				last_3days = goal.get_status_last_3days()
 			# if goal.goal_type == "Steps":
-				for status in last_6hours:
+				for status in last_3days:
 					agg = get_aggregate(goal, service, status.date_recorded)
 					if len(agg.execute()['bucket'][-1]['dataset'][0]['point']) != 0:
 						if goal.goal_type == "Steps":

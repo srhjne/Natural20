@@ -15,7 +15,16 @@ import random
 import fitness_helper_functions as fhf
 import dnd_helper_functions as dhf
 
-
+@app.before_request
+def check_login_time():
+	if session.get("login_time", None) and (request.path != '/login'):
+		if (datetime.datetime.now() - session.get("login_time")).total_seconds() > 60*60:
+			flash("Your session has timed out, please log in again")
+			del session["user_id"]
+			return redirect("/login")
+	elif (request.path != '/login'):
+		flash("Please log in to view this")
+		return redirect("/login")
 
 @app.route('/')
 def landing_page():
@@ -52,9 +61,9 @@ def profile_page(username):
 					mean_value = goal.get_mean_value_daily()
 					progress = goal.get_current_status()
 					if goal.goal_type == "Sleep":
-						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), mean_value/(60.0*60), 100.0*progress.value/goal.value, goal])
+						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), round(mean_value/(60.0*60),2), 100.0*progress.value/goal.value, goal])
 					else:
-						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), mean_value, 100.0*progress.value/goal.value, goal])
+						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), round(mean_value,2), 100.0*progress.value/goal.value, goal])
 				else:
 					progress = goal.get_current_status()
 					if goal.goal_type == "Sleep":
@@ -234,6 +243,7 @@ def login_post():
 		user = users[0]
 		if user.password == password:
 			session["user_id"] = user.user_id
+			session["login_time"] = datetime.datetime.now()
 			auth_uri = flow.step1_get_authorize_url()
 			return redirect(auth_uri)
 			# return redirect("/user/%s"%username)
@@ -274,6 +284,7 @@ def goal_graph():
 
 @app.route("/settings")
 def settings():
+	print "session=", session
 	if session.get("user_id"):
 		user = User.query.get(session["user_id"])
 		return render_template("settings.html", user=user)

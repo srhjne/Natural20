@@ -185,8 +185,8 @@ class Goal(db.Model):
     def get_current_status(self):
         return self.goalstatus[-1]
 
-    def get_status_last_6hours(self):
-        statuses = [status for status in self.goalstatus if (datetime.datetime.now() - status.date_recorded).total_seconds() < 60*60*6 ]
+    def get_status_last_3days(self):
+        statuses = [status for status in self.goalstatus if (datetime.datetime.now() - status.date_recorded).total_seconds() < 60*60*24*3.0]
         return statuses
 
     def get_status_series(self):
@@ -328,11 +328,11 @@ class SleepStatus(db.Model):
 
 
 
-def connect_to_db(app):
+def connect_to_db(app, uri='postgresql:///natural20'):
     """Connect the database to our Flask app."""
 
     # Configure to use our PstgreSQL database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///natural20'
+    app.config['SQLALCHEMY_DATABASE_URI'] = uri
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
     db.init_app(app)

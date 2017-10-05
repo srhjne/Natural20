@@ -17,14 +17,15 @@ import dnd_helper_functions as dhf
 
 @app.before_request
 def check_login_time():
-	if session.get("login_time", None) and (request.path != '/login'):
-		if (datetime.datetime.now() - session.get("login_time")).total_seconds() > 60*60:
-			flash("Your session has timed out, please log in again")
-			del session["user_id"]
+	if request.path not in ('/login', '/logout', '/registration'):
+		if session.get("login_time", None) and session.get("user_id", None):
+			if (datetime.datetime.now() - session.get("login_time")).total_seconds() > 60*60:
+				flash("Your session has timed out, please log in again")
+				del session["user_id"]
+				return redirect("/login")
+		else:
+			flash("Please log in to view this")
 			return redirect("/login")
-	elif (request.path != '/login'):
-		flash("Please log in to view this")
-		return redirect("/login")
 
 @app.route('/')
 def landing_page():
@@ -38,10 +39,14 @@ def landing_page():
 def profile_page(username):
 	"""profile page"""
 
-	user = User.query.filter(User.username==username).one()
+	try:
+		user = User.query.filter(User.username==username).one()
+	except Exception:
+		flash("This page does not exist")
+		return redirect("/login")
 	print "user id", session.get("user_id")
 	if session.get("user_id", "") != user.user_id:
-		flash("You must be logged in to view this page")
+		flash("You must be logged in as %s to view this page"% username)
 		return redirect("/login") 
 	else:
 		now = datetime.datetime.now()
@@ -107,13 +112,9 @@ def registration_handle():
 @app.route("/reroll", methods=["POST"])
 def reroll():
 	user_id = session.get("user_id")
-	if not user_id:
-		flash("You must be logged in to view this")
-		return redirect("/login")
-	else:
-		user = User.query.get(user_id)
-		user.reroll_stats()
-		return redirect("/user/%s"%user.username)
+	user = User.query.get(user_id)
+	user.reroll_stats()
+	return redirect("/user/%s"%user.username)
 
 
 
@@ -181,13 +182,14 @@ def set_goals():
 def calc_xp():
 	user = User.query.get(session.get('user_id'))
 	goal_type = request.args.get("goal_type")
+	print "Goal type", goal_type
 	goal_value = request.args.get("value")
+	print "Goal value", goal_value
 	goal_value = int(goal_value)
 	valid_from_u = request.args.get("valid_from")
 	valid_from = datetime.datetime.strptime(valid_from_u, "%Y-%m-%d")
 	valid_to_u = request.args.get("valid_to")
 	valid_to = datetime.datetime.strptime(valid_to_u, "%Y-%m-%d")
-	value = request.args.get("value")
 	frequency = request.args.get("frequency")
 	
 	xp = user.calc_xp(goal_value, valid_from, valid_to, goal_type, frequency)
@@ -225,7 +227,7 @@ def set_goal_db():
 		if goal_type != "Sleep":
 			GoalStatus.make_first_status(goal_type, valid_from, valid_to, goal_value, xp, user.user_id)
 		else:
-			SleepStatus.make_first_sleep_status(goal_type, valid_from, valid_to, goal_value, xp, user.user_id, frequency)
+			SleepStatus.make_first_sleep_status(valid_from, valid_to, goal_value, xp, user.user_id, frequency)
 		if goal_type in ("Steps", "Calories"):
 			auth_uri = flow.step1_get_authorize_url()
 			return redirect(auth_uri)

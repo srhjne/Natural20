@@ -321,8 +321,8 @@ class SleepStatus(db.Model):
 
 
     @classmethod
-    def make_first_sleep_status(cls, goal_type, valid_from, valid_to, goal_value, xp, user_id, frequency):
-        goal_db = Goal.query.filter(Goal.user_id==user_id, Goal.xp==xp, Goal.goal_type==goal_type, Goal.value==goal_value, Goal.valid_from==valid_from, Goal.valid_to==valid_to).first()
+    def make_first_sleep_status(cls, valid_from, valid_to, goal_value, xp, user_id, frequency):
+        goal_db = Goal.query.filter(Goal.user_id==user_id, Goal.xp==xp, Goal.goal_type=="Sleep", Goal.value==goal_value, Goal.valid_from==valid_from, Goal.valid_to==valid_to).first()
         print goal_db
         cls.save_sleep_goal_status(goal_db, "00:00", "00:00", frequency)
 

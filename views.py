@@ -348,7 +348,7 @@ def search_users():
 	search_term = request.args.get("search_term")
 	search = db.session.query(User.user_id, User.username)
 	search_users = search.filter(User.user_id != session["user_id"], User.username.like("%{}%".format(search_term))).all()
-	result = [(user_id, username, user.check_friendship(user_id)) for (user_id, username) in search_users]			   
+	result = [(user_id, username, user.check_friendship(user_id), user.check_pending_friend_request(user_id)) for (user_id, username) in search_users]			   
 	return jsonify(result)
 	
 
@@ -357,7 +357,10 @@ def add_friend():
 	friend_id = request.form.get("user_id")
 	user_id = session.get("user_id")
 	user = User.query.get(user_id)
+	fr = user.get_sent_friend_requests()
 	if user.check_friendship(friend_id):
+		return jsonify(False)
+	elif user.check_pending_friend_request(friend_id):
 		return jsonify(False)
 	else:
 		friendship = Friendship(user_id_1=user_id, user_id_2=friend_id, verified=False)

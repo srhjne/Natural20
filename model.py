@@ -165,21 +165,26 @@ class User(db.Model):
 
 
     def get_sent_friend_requests(self):
-        return Friendship.query.filter(Friendship.user_id_1 == self.user_id, Friendship.verified == False).all()
+        return db.session.query(Friendship, User).join(User, User.user_id == Friendship.user_id_2).filter(Friendship.user_id_1 == self.user_id, Friendship.verified == False).all()
 
     def get_friends(self):
         first_list = db.session.query(User, Friendship.user_id_2).join(Friendship, User.user_id == Friendship.user_id_1)
         new_list1 = first_list.filter((Friendship.user_id_2 == self.user_id), Friendship.verified==True).all()
-        print "newlist1", new_list1
         second_list = db.session.query(User, Friendship.user_id_1).join(Friendship, User.user_id == Friendship.user_id_2)
         new_list2 = second_list.filter((Friendship.user_id_1 == self.user_id), Friendship.verified==True).all()
-        print "newlist2", new_list2
         new_list1.extend(new_list2)
         return new_list1
+
 
     def check_friendship(self, friend_id):
         friend_id_list = [friend.user_id for friend, user_id in self.get_friends()]
         return friend_id in friend_id_list
+
+    def check_pending_friend_request(self, friend_id):
+        print self.get_sent_friend_requests()
+        friend_request_list =[friend.user_id for (friendship, friend) in self.get_sent_friend_requests()]
+        print friend_id, friend_request_list, friend_id in friend_request_list
+        return friend_id in friend_request_list
 
 
 class Goal(db.Model):

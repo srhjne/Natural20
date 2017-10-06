@@ -1,7 +1,8 @@
-from model import Monster, Attack, LevelLookup, User, UserStatus, Goal, GoalStatus
+from model import Monster, Attack, LevelLookup, User, UserStatus, Goal, GoalStatus, Friendship
 from model import connect_to_db, db
 from server import app
 import datetime
+import random
 
 
 
@@ -63,7 +64,7 @@ def load_level_lookup():
 	db.session.commit()
 
 
-def make_first_user():
+def make_first_users():
 	username = "ToK"
 	email = "sarahjaneiom@gmail.com"
 	password = "1234"
@@ -99,12 +100,85 @@ def make_first_user():
 	db.session.add(first_user_status)
 	db.session.commit()
 
+	username = "Gundren"
+	email = "gundren@rockseeker.com"
+	password = "1111"
+	second_user = User(username=username, email=email, password=password)
+	db.session.add(second_user)
+	db.session.commit()
+
+	user_id = User.query.filter(User.email == email).one().user_id
+	goal_type = "Steps"
+	valid_from = datetime.datetime.strptime("01-Oct-2017", "%d-%b-%Y")
+	valid_to = datetime.datetime.strptime("10-Oct-2017","%d-%b-%Y")
+	value = 7000
+	xp = 300
+	first_goal = Goal(user_id=user_id, goal_type=goal_type,valid_to=valid_to, 
+					  valid_from=valid_from, value=value, xp=xp, frequency="Daily")
+	db.session.add(first_goal)
+	db.session.commit()
+
+
+	goal_id = Goal.query.filter(Goal.user_id == user_id, Goal.goal_type == "Steps").one().goal_id
+	date_recorded = datetime.datetime.strptime("03-Oct-2017","%d-%b-%Y")
+	value = 1000
+	first_status = GoalStatus(date_recorded=date_recorded, value=value, goal_id=goal_id)
+	db.session.add(first_status)
+	db.session.commit()
+
+
+	level=1
+	current_xp = 0
+	current_hp = 12
+	first_user_status = UserStatus(date_recorded=date_recorded,current_hp=current_hp,
+								   current_xp=current_xp, level=level, user_id=user_id)
+	db.session.add(first_user_status)
+	db.session.commit()
 
 
 
+def make_more_users_network():
+	for line in open("dnd_data_gather/player_names.dat"):
+		username = line.strip()
+		if User.query.filter(User.username == username).all():
+			continue
+		
+		email = username+"@"+username+".com"
+		password = "password"
+		user = User(username=username, email=email, password=password)
+		db.session.add(user)
+		db.session.commit()
+		user_id = User.query.filter(User.email == email).one().user_id
+		goal_type = "Steps"
+		valid_from = datetime.datetime.strptime("05-Oct-2017", "%d-%b-%Y")
+		valid_to = datetime.datetime.strptime("01-Nov-2017","%d-%b-%Y")
+		value = random.randint(10,50)*1000
+		xp = 200
+		first_goal = Goal(user_id=user_id, goal_type=goal_type,valid_to=valid_to, 
+					  valid_from=valid_from, value=value, xp=xp)
+		db.session.add(first_goal)
+		db.session.commit()
+		GoalStatus.make_first_status(goal_type, valid_from, valid_to, value, xp, user_id)
+		level=1
+		current_xp = 0
+		current_hp = 12
+		first_user_status = UserStatus(date_recorded=valid_from,current_hp=current_hp,
+									   current_xp=current_xp, level=level, user_id=user_id)
+		db.session.add(first_user_status)
+		db.session.commit()
 
 
-
+	for i in range(0,20):
+		user_list = User.query.all()
+		first_user = random.choice(user_list)
+		second_user = random.choice(user_list)
+		if first_user == second_user:
+			continue
+		if first_user.get_friends() and second_user in first_user.get_friends()[:][0]:
+			continue
+		fs = Friendship(user_id_1=first_user.user_id, user_id_2=second_user.user_id, verified=random.choice([True, False]))
+		db.session.add(fs)
+		db.session.commit()
 
 
 if __name__ == "__main__":
@@ -116,4 +190,5 @@ if __name__ == "__main__":
     load_monsters()
     load_attacks()
     load_level_lookup()
-    make_first_user()
+    make_first_users()
+    make_more_users_network()

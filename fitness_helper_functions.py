@@ -56,7 +56,7 @@ def update_goal_status(user, service):
 			# if goal.goal_type == "Steps":
 				for status in last_3days:
 					agg = get_aggregate(goal, service, status.date_recorded)
-					if len(agg.execute()['bucket'][-1]['dataset'][0]['point']) != 0:
+					if len(agg.execute()['bucket']) != 0 and len(agg.execute()['bucket'][-1]['dataset'][0]['point']) != 0:
 						if goal.goal_type == "Steps":
 							column = "intVal"
 						elif goal.goal_type == "Calories":
@@ -68,7 +68,7 @@ def update_goal_status(user, service):
 							db.session.commit()
 				agg = get_aggregate(goal, service, datetime.datetime.now())
 				print "Got to here"	
-				if len(agg.execute()['bucket'][-1]['dataset'][0]['point']) == 0:
+				if len(agg.execute()['bucket']) != 0 and len(agg.execute()['bucket'][-1]['dataset'][0]['point']) == 0:
 					return "No data"
 				else:
 					if goal.goal_type == "Steps":

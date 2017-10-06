@@ -1,0 +1,17 @@
+{%extends 'base.html'%}
+
+{%block title%} Natural 20 Find friends {%endblock%}
+
+
+{%block content%}
+<form id = "search_users">
+Username <input type="text" name="username" id="username">
+<input type="submit" value="Search users">
+</form>
+<ul id="user_list">
+
+</ul>
+
+
+<script src="/static/search_users.js"></script>
+{%endblock%}

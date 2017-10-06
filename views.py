@@ -6,7 +6,7 @@ from oauth2client.file import Storage
 
 from flask import jsonify, render_template, redirect, request, flash, session
 
-from model import User, Goal, GoalStatus, UserStatus, Monster, Attack, LevelLookup, SleepStatus
+from model import db, User, Goal, GoalStatus, UserStatus, Monster, Attack, LevelLookup, SleepStatus, Friendship
 
 import os
 import datetime
@@ -327,4 +327,67 @@ def record_sleep():
 		SleepStatus.save_sleep_goal_status(goal,bedtime, waketime, frequency=goal.frequency)
 		print bedtime, type(bedtime), dir(bedtime)
 	return redirect("user/%s"%user.username)
+
+
+@app.route("/friend_requests")
+def friend_requests():
+	user = User.query.get(session["user_id"])
+	friends = user.get_friend_requests()
+	print friends
+	return "friends printed %s"%friends
+
+
+@app.route("/add_friends")
+def add_friends():
+	return render_template("add_friends.html")
+
+
+@app.route("/users.json")
+def search_users():
+	user = User.query.get(session.get("user_id"))
+	search_term = request.args.get("search_term")
+	search = db.session.query(User.user_id, User.username)
+	search_users = search.filter(User.user_id != session["user_id"], User.username.like("%{}%".format(search_term))).all()
+	result = [(user_id, username, user.check_friendship(user_id)) for (user_id, username) in search_users]			   
+	return jsonify(result)
 	
+
+@app.route("/add_friend.json", methods=["POST"])
+def add_friend():
+	friend_id = request.form.get("user_id")
+	user_id = session.get("user_id")
+	user = User.query.get(user_id)
+	if user.check_friendship(friend_id):
+		return jsonify(False)
+	else:
+		friendship = Friendship(user_id_1=user_id, user_id_2=friend_id, verified=False)
+		db.session.add(friendship)
+		db.session.commit()
+		fs = Friendship.query.filter(Friendship.user_id_1==user_id, Friendship.user_id_2 == friend_id).all()
+		return jsonify("success")
+
+
+@app.route("/friend_request.json")
+def friend_request():
+	user = User.query.get(session["user_id"])
+	friend_requests = user.get_friend_requests()
+	print friend_requests
+	return jsonify([{"friendship_id": friendship.friendship_id,
+					 "friend_name": user.username,
+					 "friend id": user.user_id} for friendship, user in friend_requests])
+
+
+@app.route("/friend_request.json", methods=["POST"])
+def friend_request_accept():
+	friendship_id = request.form.get("friendship_id")
+	friendship = Friendship.query.get(friendship_id)
+	friendship.verified = True
+	db.session.commit()
+	return jsonify([friendship_id])
+
+@app.route("/friends")
+def friends():
+	user = User.query.get(session.get("user_id"))
+	friends = user.get_friends()
+	print friends
+	return render_template("friends.html", friends=friends)

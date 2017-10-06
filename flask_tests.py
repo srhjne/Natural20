@@ -178,48 +178,48 @@ class UserTest(TestCase):
         self.assertIn("Log In", result.data)
 
 
-# class SeleniumTests(TestCase):
+class SeleniumTests(TestCase):
 
-#     def setUp(self):
-#         self.browser_type = "Firefox"
-#         if self.browser_type == "Firefox":
-#             self.browser = webdriver.Firefox()
-#         elif self.browser_type == "Chrome":
-#             self.browser = webdriver.Chrome()
-#         server.flow.step1_get_authorize_url=_mock_auth
-#         self.browser.get("http://localhost:5000/login")
-#         username = self.browser.find_element_by_id('username')
-#         username.send_keys("ToK")
-#         password = self.browser.find_element_by_id('password')
-#         password.send_keys("1234")
-#         submit = self.browser.find_element_by_id("submit")
-#         submit.click()
+    def setUp(self):
+        self.browser_type = "Firefox"
+        if self.browser_type == "Firefox":
+            self.browser = webdriver.Firefox()
+        elif self.browser_type == "Chrome":
+            self.browser = webdriver.Chrome()
+        server.flow.step1_get_authorize_url=_mock_auth
+        self.browser.get("http://localhost:5000/login")
+        username = self.browser.find_element_by_id('username')
+        username.send_keys("ToK")
+        password = self.browser.find_element_by_id('password')
+        password.send_keys("1234")
+        submit = self.browser.find_element_by_id("submit")
+        submit.click()
 
-#     def tearDown(self):
-#         self.browser.quit()
+    def tearDown(self):
+        self.browser.quit()
        
 
-#     def test_set_goal(self):
-#         self.browser.get('http://localhost:5000/set_goal')
+    def test_set_goal(self):
+        self.browser.get('http://localhost:5000/set_goal')
 
-#         x = self.browser.find_element_by_id('valid_from')
+        x = self.browser.find_element_by_id('valid_from')
         
-#         y = self.browser.find_element_by_id('valid_to')
-#         if self.browser_type == "Firefox":
-#             x.send_keys("2017-10-01")
-#             y.send_keys("2017-10-02")
-#         elif self.browser_type == "Chrome":
-#             x.send_keys("10-01-2017")
-#             y.send_keys("10-02-2017")
+        y = self.browser.find_element_by_id('valid_to')
+        if self.browser_type == "Firefox":
+            x.send_keys("2017-10-01")
+            y.send_keys("2017-10-02")
+        elif self.browser_type == "Chrome":
+            x.send_keys("10-01-2017")
+            y.send_keys("10-02-2017")
 
-#         y = self.browser.find_element_by_id('value')
-#         y.send_keys("20000")
+        y = self.browser.find_element_by_id('value')
+        y.send_keys("20000")
 
-#         btn = self.browser.find_element_by_id('calc_xp')
-#         btn.click()
+        btn = self.browser.find_element_by_id('calc_xp')
+        btn.click()
 
-#         result = self.browser.find_element_by_id('show_xp')
-#         self.assertEqual(result.text, "500")
+        result = self.browser.find_element_by_id('show_xp')
+        self.assertEqual(result.text, "500")
 
 
 

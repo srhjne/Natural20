@@ -160,6 +160,27 @@ class User(db.Model):
     def get_current_sleep_goals(self):
         return [goal for goal in self.goal if goal.goal_type=="Sleep" and not goal.resolved and goal.valid_to > datetime.datetime.now()]
     
+    def get_friend_requests(self):
+        return db.session.query(Friendship, User).join(User, User.user_id == Friendship.user_id_1).filter(Friendship.user_id_2 == self.user_id, Friendship.verified == False).all()
+
+
+    def get_sent_friend_requests(self):
+        return Friendship.query.filter(Friendship.user_id_1 == self.user_id, Friendship.verified == False).all()
+
+    def get_friends(self):
+        first_list = db.session.query(User, Friendship.user_id_2).join(Friendship, User.user_id == Friendship.user_id_1)
+        new_list1 = first_list.filter((Friendship.user_id_2 == self.user_id), Friendship.verified==True).all()
+        print "newlist1", new_list1
+        second_list = db.session.query(User, Friendship.user_id_1).join(Friendship, User.user_id == Friendship.user_id_2)
+        new_list2 = second_list.filter((Friendship.user_id_1 == self.user_id), Friendship.verified==True).all()
+        print "newlist2", new_list2
+        new_list1.extend(new_list2)
+        return new_list1
+
+    def check_friendship(self, friend_id):
+        friend_id_list = [friend.user_id for friend, user_id in self.get_friends()]
+        return friend_id in friend_id_list
+
 
 class Goal(db.Model):
 
@@ -325,6 +346,46 @@ class SleepStatus(db.Model):
         goal_db = Goal.query.filter(Goal.user_id==user_id, Goal.xp==xp, Goal.goal_type=="Sleep", Goal.value==goal_value, Goal.valid_from==valid_from, Goal.valid_to==valid_to).first()
         print goal_db
         cls.save_sleep_goal_status(goal_db, "00:00", "00:00", frequency)
+
+class Friendship(db.Model):
+
+    __tablename__ = "friendships"
+
+    friendship_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id_1 = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    user_id_2 = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    verified = db.Column(db.Boolean, nullable=False)
+
+
+    def __repr__(self):
+        return "<Friendship between user_id=%s and user_id=%s>"%(self.user_id_1, self.user_id_2)
+
+class Team(db.Model):
+
+    __tablename__ = "teams"
+
+    team_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    teamname = db.Column(db.String(32), nullable=False)
+
+
+    def __repr__(self):
+        return "<Team teamname=%s>"% self.teamname
+
+class UserTeam(db.Model):
+
+    __tablename__ = "userteams"
+
+    userteam_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    team_id = db.Column(db.Integer, db.ForeignKey("teams.team_id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    valid_from = db.Column(db.TIMESTAMP, nullable=False)
+    valid_to = db.Column(db.TIMESTAMP, nullable=True)
+
+    user = db.relationship("User", backref=db.backref("userteam", order_by = valid_from))
+    team = db.relationship("Team", backref=db.backref("userteam"))
+
+    def __repr__(self):
+        return "<UserTeam team_id=%s, user_id=%s>"%(self.team_id, self.user_id)
 
 
 

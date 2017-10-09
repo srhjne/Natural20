@@ -6,7 +6,7 @@ from oauth2client.file import Storage
 
 from flask import jsonify, render_template, redirect, request, flash, session
 
-from model import db, User, Goal, GoalStatus, UserStatus, Monster, Attack, LevelLookup, SleepStatus, Friendship
+from model import db, User, Goal, GoalStatus, UserStatus, Monster, Attack, LevelLookup, SleepStatus, Friendship, Team, UserTeam
 
 import os
 import datetime
@@ -394,3 +394,8 @@ def friends():
 	friends = user.get_friends()
 	print friends
 	return render_template("friends.html", friends=friends)
+
+@app.route("/team")
+def team():
+	xp_team = dhf.get_team_rankings()
+	return render_template("team.html", top_teams=sorted(xp_team, reverse=True))

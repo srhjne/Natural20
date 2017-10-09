@@ -1,4 +1,4 @@
-from model import UserStatus, db
+from model import UserStatus, db, User, Team
 import random
 import datetime
 
@@ -44,3 +44,23 @@ def get_outcome_dict(user):
 
 	UserStatus.create_save_updated_status(user=user, new_xp=new_xp, new_hp=new_hp, current_status=most_recent_status)
 	return goal_list
+
+
+def get_team_rankings():
+	""" returns a list of tuples of form (xp, team)"""
+	teams = Team.query.all()
+	xp_team = []
+	for team in teams:
+		team_xp = 0
+		print team
+		print team.userteam
+		for userteam in team.userteam:
+			user_id = userteam.user_id
+			user = User.query.get(user_id)
+			print user
+			print user.get_current_status()
+			user_xp = user.get_current_status().current_xp
+			team_xp+=user_xp
+		xp_team.append((team_xp, team))
+
+	return xp_team

@@ -1,4 +1,4 @@
-from model import Monster, Attack, LevelLookup, User, UserStatus, Goal, GoalStatus, Friendship
+from model import Monster, Attack, LevelLookup, User, UserStatus, Goal, GoalStatus, Friendship, Team, UserTeam
 from model import connect_to_db, db
 from server import app
 import datetime
@@ -160,7 +160,7 @@ def make_more_users_network():
 		db.session.commit()
 		GoalStatus.make_first_status(goal_type, valid_from, valid_to, value, xp, user_id)
 		level=1
-		current_xp = 0
+		current_xp = random.randint(20,50)*10
 		current_hp = 12
 		first_user_status = UserStatus(date_recorded=valid_from,current_hp=current_hp,
 									   current_xp=current_xp, level=level, user_id=user_id)
@@ -168,18 +168,34 @@ def make_more_users_network():
 		db.session.commit()
 
 
-	for i in range(0,20):
+	for i in range(0,50):
 		user_list = User.query.all()
 		first_user = random.choice(user_list)
 		second_user = random.choice(user_list)
 		if first_user == second_user:
 			continue
-		if first_user.get_friends() and second_user in first_user.get_friends()[:][0]:
+		if ((Friendship.query.filter(Friendship.user_id_1 == first_user.user_id, Friendship.user_id_2 == second_user.user_id).all()) 
+			or Friendship.query.filter(Friendship.user_id_2 == first_user.user_id, Friendship.user_id_1 == second_user.user_id).all()):
 			continue
-		fs = Friendship(user_id_1=first_user.user_id, user_id_2=second_user.user_id, verified=random.choice([True, False]))
+		fs = Friendship(user_id_1=first_user.user_id, user_id_2=second_user.user_id, verified=random.choice([True, True, True, False]))
 		db.session.add(fs)
 		db.session.commit()
 
+	team1 = Team(teamname="Whitearrows")
+	team2 = Team(teamname="Doomshapers")
+	team3 = Team(teamname="Hollowlanders")
+	team4 = Team(teamname="Bronzestriders")
+	team5 = Team(teamname="Sunroses")
+	db.session.add_all([team1,team2,team3,team4,team5])
+	db.session.commit()
+
+	for i in range(2,34,2):
+		teams = Team.query.all()
+		team_id = random.choice(teams).team_id
+		valid_from = datetime.datetime.strptime("31-12-2999", "%d-%m-%Y")
+		userteam = UserTeam(user_id=i, team_id=team_id, valid_from=datetime.datetime.now(), valid_to=valid_to)
+		db.session.add(userteam)
+		db.session.commit()
 
 if __name__ == "__main__":
     connect_to_db(app)

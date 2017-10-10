@@ -193,6 +193,19 @@ class User(db.Model):
         else:
             return None
 
+    def leave_current_team(self):
+        current_userteam = [userteam for userteam in self.userteam if userteam.valid_from < datetime.datetime.now() and userteam.valid_to > datetime.datetime.now()]
+        if len(current_userteam) > 1 or not current_userteam:
+            print "oh no team is not working properly", current_userteam
+            return False
+        else:
+            current_userteam[0].valid_to = datetime.datetime.now()
+            print current_userteam[0].team
+            print current_userteam[0].team.teamname
+            return current_userteam[0].team.teamname
+
+
+
 class Goal(db.Model):
 
     __tablename__ = "goals"

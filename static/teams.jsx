@@ -11,16 +11,37 @@ class ContentBox extends React.Component {
             teamname_view: "",
             friends: [],
         };
-        this.getTeam = this.getTeam.bind(this);
-        this.getTeam(this.state.teamname);
-        this.setState({teamname: this.state.teamname_view});
+        
         this.getLeaderboard = this.getLeaderboard.bind(this);
-        this.getLeaderboard();
         this.getFriends = this.getFriends.bind(this);
-        this.getFriends();
-        console.log(this.state.friends);
+        this.getTeam = this.getTeam.bind(this);
+        this.leaveTeam = this.leaveTeam.bind(this);
+        console.log(this.state);
         
     }
+
+
+    componentDidMount(){
+    	this.getLeaderboard();
+    	this.getFriends();
+        this.getTeam(this.state.teamname);
+        this.setState({teamname: this.state.teamname_view});
+        console.log("component did mount");
+        console.log(this.state);
+    }
+
+    leaveTeam(teamname){
+		$.post("/leave_team.json",{teamname: teamname},function(result){
+			if (result){
+				this.setState({teamname:""})
+			}
+			console.log("This is leave team")
+			console.log(result);
+			console.log(this.state);
+
+		}.bind(this));
+	}
+
 
     getLeaderboard(){
     	$.get("/get_leaderboard.json", function (result){
@@ -35,6 +56,9 @@ class ContentBox extends React.Component {
    				console.log(result);
 	   			this.setState({team_members:result[1]});
 	   			this.setState({teamname_view: result[0]});
+	   			if (this.state.teamname === teamname) {
+	   				this.setState({teamname: result[0]});
+	   			}
    			}
 
    		}.bind(this));
@@ -59,7 +83,8 @@ class ContentBox extends React.Component {
                         
                     </div>
                     <div className="col-sm-9 col-xs-12 my-team">
-                        <TeamDetail teamname={this.state.teamname_view}  team_members={this.state.team_members} friends={this.state.friends}> </TeamDetail>
+                        <TeamDetail teamname={this.state.teamname}
+                        teamname_view={this.state.teamname_view}  team_members={this.state.team_members} friends={this.state.friends} leaveTeam={this.leaveTeam.bind(this, this.state.teamname)}> </TeamDetail>
                     </div>
                 </div>
             </div>
@@ -143,7 +168,7 @@ class TeamDetail extends React.Component {
 		return (
 			<div>
 			<h1> Team Detail </h1>
-			<TeamJoin teamname={this.props.teamname}/>
+			<TeamJoin teamname={this.props.teamname} teamname_view={this.props.teamname_view} leaveTeam={this.props.leaveTeam}/>
 			 {Object.keys(this.props.team_members).map(function(player_id){
                     return <PlayerDetail player_id ={player_id} team_member={this.props.team_members[player_id]} friend={this.isFriend(player_id)}></PlayerDetail>;
                   }.bind(this))}
@@ -228,13 +253,32 @@ class TeamJoin extends React.Component {
 	console.log(this.props);
 	}
 
-	render () {
-		return (
-		<div>
-		<h1> {this.props.teamname} </h1>
-		</div>
-		)
+	inviteTeamMember(){
+		console.log(this);
+	}
 
+	
+	render () {
+		if (this.props.teamname !== this.props.teamname_view) {
+			return (
+				<div>
+				<h1> {this.props.teamname_view} </h1>
+				</div>
+			)
+		}
+		else if (this.props.teamname !== "" ){
+			return (
+				<div>
+				<h1> {this.props.teamname_view} </h1>
+				<div className="btn btn-default" onClick={this.props.leaveTeam}>
+					Leave Team
+				</div>
+				<div className="btn btn-default" onClick={this.inviteTeamMember}>
+					Invite Friends
+				</div>
+			</div>
+			)
+		} else return null; 
 	}
 
 }

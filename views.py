@@ -438,3 +438,14 @@ def get_friends():
 	friend_id_list = [ friend[0].user_id for friend in friends]
 	return jsonify(friend_id_list)
 
+@app.route("/leave_team.json", methods=["POST"])
+def leave_team():
+	user = User.query.get(session["user_id"])
+	team = user.get_current_team()
+	teamname = request.form.get("teamname")
+	print "teamname from react", teamname
+	print "teamname from user", team.teamname
+	if teamname != team.teamname:
+		return jsonify(False)
+	else:
+		return jsonify(user.leave_current_team())

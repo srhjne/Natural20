@@ -418,7 +418,7 @@ def get_team():
 		team = user.get_current_team()
 		print "my team is", team
 		if not team:
-			return jsonify({})
+			return jsonify([])
 	else:
 		team = Team.query.filter(Team.teamname == teamname).first()
 	current_team_dict = {}
@@ -428,7 +428,7 @@ def get_team():
 			status = user.get_current_status()
 			current_team_dict[user.user_id] = {"username": user.username, "xp": status.current_xp,
 											    "hp": status.current_hp, "level": status.level}
-	return jsonify(current_team_dict) 
+	return jsonify([team.teamname, current_team_dict]) 
 
 @app.route("/get_friends.json")
 def get_friends():

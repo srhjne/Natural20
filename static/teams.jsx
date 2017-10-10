@@ -8,10 +8,12 @@ class ContentBox extends React.Component {
             team_members: {},
             teams: [],
             teamname: "",
-            friends: []
+            teamname_view: "",
+            friends: [],
         };
         this.getTeam = this.getTeam.bind(this);
         this.getTeam(this.state.teamname);
+        this.setState({teamname: this.state.teamname_view});
         this.getLeaderboard = this.getLeaderboard.bind(this);
         this.getLeaderboard();
         this.getFriends = this.getFriends.bind(this);
@@ -29,7 +31,11 @@ class ContentBox extends React.Component {
 
     getTeam(teamname){
    		$.get("/get_team.json", {teamname: teamname}, function (result){
-   			this.setState({team_members:result});
+   			if (result.length !== 0){
+   				console.log(result);
+	   			this.setState({team_members:result[1]});
+	   			this.setState({teamname_view: result[0]});
+   			}
 
    		}.bind(this));
    		}
@@ -53,7 +59,7 @@ class ContentBox extends React.Component {
                         
                     </div>
                     <div className="col-sm-9 col-xs-12 my-team">
-                        <TeamDetail teamname={this.state.teamname}  team_members={this.state.team_members} friends={this.state.friends}> </TeamDetail>
+                        <TeamDetail teamname={this.state.teamname_view}  team_members={this.state.team_members} friends={this.state.friends}> </TeamDetail>
                     </div>
                 </div>
             </div>
@@ -122,14 +128,10 @@ class TeamDetail extends React.Component {
 
 	isFriend (user_id) {
 		if (this.props.friends.includes(parseInt(user_id))){
-			console.log("thinks it is true");
-			console.log(this.props.friends);
-			console.log(parseInt(user_id));
+			
 			return true;
 		}else {
-			console.log("thinks it is false");
-			console.log(this.props.friends);
-			console.log(parseInt(user_id));
+			
 			return false;
 		}
 	}
@@ -141,9 +143,11 @@ class TeamDetail extends React.Component {
 		return (
 			<div>
 			<h1> Team Detail </h1>
+			<TeamJoin teamname={this.props.teamname}/>
 			 {Object.keys(this.props.team_members).map(function(player_id){
                     return <PlayerDetail player_id ={player_id} team_member={this.props.team_members[player_id]} friend={this.isFriend(player_id)}></PlayerDetail>;
                   }.bind(this))}
+			
 			
 			</div>
 			)
@@ -157,9 +161,7 @@ class PlayerDetail extends React.Component {
 	}
 
 	render (){
-	console.log("player detail");
-	console.log(this.props.team_member.username);
-	console.log(this.props.friend);
+	
 	return (
 	<div className="player-overview">
 	<PlayerLink username={this.props.team_member.username} friend={this.props.friend} />
@@ -219,6 +221,23 @@ class PlayerLink extends React.Component {
 
 }
 
+
+class TeamJoin extends React.Component {
+	constructor(props){
+	super(props);
+	console.log(this.props);
+	}
+
+	render () {
+		return (
+		<div>
+		<h1> {this.props.teamname} </h1>
+		</div>
+		)
+
+	}
+
+}
 
 ReactDOM.render(
     <ContentBox />,

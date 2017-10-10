@@ -84,7 +84,7 @@ div.alert {
 
 .leaderboard-element {
 	display: block;
-	width: 80%;
+	width: 90%;
 	font-size: 30px;
 	margin-left: auto;
 	margin-right: auto;
@@ -93,4 +93,15 @@ div.alert {
 div.friends {
 	border: solid 3px red;
 	background-color: red;
+}
+
+div.leaderboard-element-name {
+	display: inline-flex;
+	width:80%;
+
+}
+
+div.leaderboard-element-xp {
+	display:inline-flex;
+	width:20%;
 }

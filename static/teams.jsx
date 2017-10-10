@@ -16,6 +16,7 @@ class ContentBox extends React.Component {
         this.getLeaderboard();
         this.getFriends = this.getFriends.bind(this);
         this.getFriends();
+        console.log(this.state.friends);
         
     }
 
@@ -35,7 +36,11 @@ class ContentBox extends React.Component {
     
     getFriends(){
     	$.get("/get_friends.json", function (result){
-    		this.setState({friends: result})
+    		console.log("friends json");
+    		console.log(result);
+    		this.setState({friends: result});
+    		console.log("friends state");
+    		console.log(this.state.friends);
     	}.bind(this));
     }
 
@@ -116,9 +121,15 @@ class TeamDetail extends React.Component {
 
 
 	isFriend (user_id) {
-		if (parseInt(user_id) in this.props.friends){
+		if (this.props.friends.includes(parseInt(user_id))){
+			console.log("thinks it is true");
+			console.log(this.props.friends);
+			console.log(parseInt(user_id));
 			return true;
 		}else {
+			console.log("thinks it is false");
+			console.log(this.props.friends);
+			console.log(parseInt(user_id));
 			return false;
 		}
 	}
@@ -131,7 +142,7 @@ class TeamDetail extends React.Component {
 			<div>
 			<h1> Team Detail </h1>
 			 {Object.keys(this.props.team_members).map(function(player_id){
-                    return <PlayerDetail team_member={this.props.team_members[player_id]} friend={this.isFriend(player_id)}></PlayerDetail>;
+                    return <PlayerDetail player_id ={player_id} team_member={this.props.team_members[player_id]} friend={this.isFriend(player_id)}></PlayerDetail>;
                   }.bind(this))}
 			
 			</div>
@@ -142,13 +153,16 @@ class TeamDetail extends React.Component {
 class PlayerDetail extends React.Component {
 	constructor(props){
 	super(props)
+	
 	}
 
 	render (){
+	console.log("player detail");
+	console.log(this.props.team_member.username);
+	console.log(this.props.friend);
 	return (
 	<div className="player-overview">
-     
-	<h3>{this.props.team_member.username }</h3>
+	<PlayerLink username={this.props.team_member.username} friend={this.props.friend} />
 	<table>
 	<tr>
 	<td>
@@ -180,6 +194,31 @@ class PlayerDetail extends React.Component {
 	}
 
 }
+
+class PlayerLink extends React.Component {
+	constructor(props){
+	super(props);
+	console.log(this.props);
+	this.makeHref = this.makeHref.bind(this);
+	}
+
+	makeHref () {
+	return "/user/"+this.props.username;
+	}
+
+	render (){
+	if (this.props.friend){
+	return (
+	<h3> <a href={this.makeHref()} > {this.props.username} </a> </h3>
+	)} else {
+	return (
+	<h3> {this.props.username} </h3>
+	)
+	}
+	}
+
+}
+
 
 ReactDOM.render(
     <ContentBox />,

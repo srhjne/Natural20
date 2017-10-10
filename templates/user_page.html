@@ -2,7 +2,11 @@
 {%block title%} Natural 20: Character Sheet {%endblock%}
 {%block content%}
 <div class=container>
+{%if isfriend%}
+<h1 id="welcome"> {{username}}'s profile </h1>
+{%else%}
 <h1 id="welcome"> Welcome, {{username}}! </h1>
+{%endif%}
 <div class = "col-md-4 col-xs-12">
 <div id="stats">
 <div id="stats-text">
@@ -21,7 +25,12 @@ HP: {{hp}} <br>
 {%if goalstatus%}
 {%for date, value, ratio, goal in goalstatus %}
 <div class="figures_div">
-Your current quest is to complete {%if goal.goal_type == "Sleep"%}{{goal.value/(60.0*60.0)}} hours of{%else%}{{goal.value}}{%endif%} {{goal.goal_type}}
+{%if isfriend%}
+{{username}}'s
+{%else%}
+Your 
+{%endif%}
+current quest is to complete {%if goal.goal_type == "Sleep"%}{{goal.value/(60.0*60.0)}} hours of{%else%}{{goal.value}}{%endif%} {{goal.goal_type}}
 {%if goal.frequency == "Daily"%}
 per day until
 {%else%}
@@ -29,8 +38,12 @@ per day until
  {%endif%}
  {{goal.valid_to.strftime("%I:%M%p %B %d, %Y")}} <br>
 
-
-You are currently
+{%if isfriend%}
+{{username}} is
+{%else%}
+You are 
+{%endif%}
+currently
 {%if goal.frequency == "Daily"%}
 averaging
 {%else%}
@@ -50,8 +63,12 @@ at
 {%endfor%}
 {%else%}
 <div class="no-goals">
+{%if isfriend%}
+{{username}} doesn't currently have any goals
+{%else%}
 You don't currently have any quests.<br>
 <a href="/set_goal"> Set a new Goal </a>
+{%endif%}
 </div>
 {%endif%}
 </div>
@@ -63,5 +80,7 @@ You don't currently have any quests.<br>
 </div>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="/static/homepage_plots.js"></script>
+{%if not isfriend%}
 <script type="text/javascript" src="/static/friend_requests.js"></script>
+{%endif%}
 {%endblock%}

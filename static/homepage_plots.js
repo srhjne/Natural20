@@ -1,7 +1,7 @@
 "use strict";
 
 
-$.get("/goal_graph.json", function (result){
+$.get("/goal_graph.json", {username: window.location.pathname.slice(6)},function (result){
 	if (Object.keys(result).length > 0){
 		var data = []
 		for (var prop in result){

@@ -45,16 +45,17 @@ def profile_page(username):
 		flash("This page does not exist")
 		return redirect("/login")
 	print "user id", session.get("user_id")
-	if session.get("user_id", "") != user.user_id:
-		flash("You must be logged in as %s to view this page"% username)
-		return redirect("/login") 
+	is_friend = user.check_friendship(session.get("user_id"))
+	if session.get("user_id", "") != user.user_id and not is_friend:
+		flash("You must be friends with %s to view this page"% username)
+		return redirect("/") 
 	else:
 		now = datetime.datetime.now()
 		status = user.get_current_status()
 
 		xp = status.current_xp
 		hp = status.current_hp
-		if hp == 0:
+		if hp == 0 and not is_friend:
 			return render_template("dead.html")
 		else:
 			level = status.level
@@ -78,7 +79,7 @@ def profile_page(username):
 
 
 			return render_template("user_page.html", username=username,  
-				                   goalstatus = progresses, xp=xp, hp=hp, level=level)
+				                   goalstatus = progresses, xp=xp, hp=hp, level=level, isfriend=is_friend)
 
 
 @app.route('/registration')
@@ -266,8 +267,12 @@ def logout():
 
 @app.route("/goal_graph.json")
 def goal_graph():
+	page_user = request.args.get("username")
+	
 	if session.get("user_id"):
 		user = User.query.get(session["user_id"])
+		if page_user:
+			user = User.query.filter(User.username == page_user).first()
 		goals = user.get_current_goals()
 		goal_dict = {}
 		for goal in goals:
@@ -429,6 +434,7 @@ def get_team():
 def get_friends():
 	user = User.query.get(session["user_id"])
 	friends = user.get_friends()
+	print friends
 	friend_id_list = [ friend[0].user_id for friend in friends]
 	return jsonify(friend_id_list)
 

@@ -46,7 +46,7 @@ def get_outcome_dict(user):
 	return goal_list
 
 
-def get_team_rankings():
+def get_team_rankings(dictionary=False):
 	""" returns a list of tuples of form (xp, team)"""
 	teams = Team.query.all()
 	xp_team = []
@@ -54,6 +54,7 @@ def get_team_rankings():
 		team_xp = 0
 		print team
 		print team.userteam
+		team_size = len(team.userteam)
 		for userteam in team.userteam:
 			user_id = userteam.user_id
 			user = User.query.get(user_id)
@@ -61,6 +62,11 @@ def get_team_rankings():
 			print user.get_current_status()
 			user_xp = user.get_current_status().current_xp
 			team_xp+=user_xp
-		xp_team.append((team_xp, team))
-
-	return xp_team
+		if dictionary:
+			xp_team.append({"xp":team_xp,"avg_xp": round(team_xp/float(team_size),0), "teamname":team.teamname, "team_id": team.team_id})
+		else:
+			xp_team.append((team_xp, team))
+	if dictionary:
+		return sorted(xp_team, key=lambda a: a["avg_xp"], reverse=True)
+	else:
+		return sorted(xp_team, key=lambda a: a[0], reverse=True)

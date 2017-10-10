@@ -186,6 +186,12 @@ class User(db.Model):
         print friend_id, friend_request_list, friend_id in friend_request_list
         return friend_id in friend_request_list
 
+    def get_current_team(self):
+        teams = [userteam.team for userteam in self.userteam if userteam.valid_from < datetime.datetime.now() and userteam.valid_to > datetime.datetime.now()]
+        if teams:
+            return teams[0]
+        else:
+            return None
 
 class Goal(db.Model):
 
@@ -375,6 +381,10 @@ class Team(db.Model):
 
     def __repr__(self):
         return "<Team teamname=%s>"% self.teamname
+
+    def get_current_team_members(self):
+        user_id_list = [userteam.user_id for userteam in self.userteam if userteam.valid_from < datetime.datetime.now() and userteam.valid_to > datetime.datetime.now()]
+        return [User.query.get(user_id) for user_id in user_id_list]
 
 class UserTeam(db.Model):
 

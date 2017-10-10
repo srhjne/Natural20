@@ -397,5 +397,38 @@ def friends():
 
 @app.route("/team")
 def team():
-	xp_team = dhf.get_team_rankings()
-	return render_template("team.html", top_teams=sorted(xp_team, reverse=True))
+	return render_template("team.html")
+
+@app.route("/get_leaderboard.json")
+def leaderboard():
+	xp_team = dhf.get_team_rankings(dictionary=True)
+	return jsonify(xp_team)
+
+@app.route("/get_team.json")
+def get_team():
+	teamname = request.args.get("teamname")
+	user = User.query.get(session["user_id"])
+	print "teamname", teamname 
+	if teamname == "":
+		team = user.get_current_team()
+		print "my team is", team
+		if not team:
+			return jsonify({})
+	else:
+		team = Team.query.filter(Team.teamname == teamname).first()
+	current_team_dict = {}
+	if team:
+		users = team.get_current_team_members()
+		for user in users:
+			status = user.get_current_status()
+			current_team_dict[user.user_id] = {"username": user.username, "xp": status.current_xp,
+											    "hp": status.current_hp, "level": status.level}
+	return jsonify(current_team_dict) 
+
+@app.route("/get_friends.json")
+def get_friends():
+	user = User.query.get(session["user_id"])
+	friends = user.get_friends()
+	friend_id_list = [ friend[0].user_id for friend in friends]
+	return jsonify(friend_id_list)
+

@@ -449,3 +449,12 @@ def leave_team():
 		return jsonify(False)
 	else:
 		return jsonify(user.leave_current_team())
+
+
+@app.route("/invite_friends.json", methods=["POST"])
+def invite_friends():
+	user = User.query.get(session["user_id"])
+	team = user.get_current_team()
+
+
+	return jsonify([])

@@ -200,6 +200,7 @@ class User(db.Model):
             return False
         else:
             current_userteam[0].valid_to = datetime.datetime.now()
+            db.session.commit()
             print current_userteam[0].team
             print current_userteam[0].team.teamname
             return current_userteam[0].team.teamname

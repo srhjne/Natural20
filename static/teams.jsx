@@ -31,15 +31,19 @@ class ContentBox extends React.Component {
     }
 
     leaveTeam(teamname){
-		$.post("/leave_team.json",{teamname: teamname},function(result){
-			if (result){
-				this.setState({teamname:""})
-			}
-			console.log("This is leave team")
-			console.log(result);
-			console.log(this.state);
+    	var retVal = confirm("Are you sure you want to leave this team?");
+    	if (retVal == true){
+			$.post("/leave_team.json",{teamname: teamname},function(result){
+				if (result){
+					this.setState({teamname:""})
+					this.getTeam(this.state.teamname)
+				}
+				console.log("This is leave team")
+				console.log(result);
+				console.log(this.state);
 
-		}.bind(this));
+			}.bind(this));
+		}
 	}
 
 
@@ -273,14 +277,89 @@ class TeamJoin extends React.Component {
 				<div className="btn btn-default" onClick={this.props.leaveTeam}>
 					Leave Team
 				</div>
-				<div className="btn btn-default" onClick={this.inviteTeamMember}>
-					Invite Friends
+				
+				<a href="#myModal" role="button" className="btn btn-large btn-primary" data-toggle="modal">Invite Friends</a>
+				<div id="myModal" className="modal fade">
+
+    			<div className="modal-dialog">
+
+				        <div className="modal-content">
+
+				            <div className="modal-header">
+
+				                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+				                <h4 className="modal-title">Add Friends</h4>
+
+				            </div>
+
+				            <div className="modal-body">
+				            	<button type="button" className="btn btn-primary">friend one</button>
+
+				            	<button type="button" className="btn btn-primary">friend two</button>
+
+				            	<button type="button" className="btn btn-primary">friend three</button>
+
+				                
+				            </div>
+
+				        </div>
+
+				    </div>
+
 				</div>
 			</div>
 			)
 		} else return null; 
 	}
 
+}
+
+
+class inviteModal extends React.Component{
+	constructor(props){
+		super(props);
+	}
+
+	render (){
+		return (<div id="myModal" className="modal fade">
+
+    <div className="modal-dialog">
+
+        <div className="modal-content">
+
+            <div className="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                <h4 className="modal-title">Confirmation</h4>
+
+            </div>
+
+            <div className="modal-body">
+
+                <p>Do you want to save changes you made to document before closing?</p>
+
+                <p className="text-warning"><small>If you dont save, your changes will be lost.</small></p>
+
+            </div>
+
+            <div className="modal-footer">
+
+                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+
+                <button type="button" className="btn btn-primary">Save changes</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+			)
+
+	}
 }
 
 ReactDOM.render(

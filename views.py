@@ -334,13 +334,6 @@ def record_sleep():
 	return redirect("user/%s"%user.username)
 
 
-# @app.route("/friend_requests")
-# def friend_requests():
-# 	user = User.query.get(session["user_id"])
-# 	friends = user.get_friend_requests()
-# 	print friends
-# 	return "friends printed %s"%friends
-
 
 @app.route("/add_friends")
 def add_friends():

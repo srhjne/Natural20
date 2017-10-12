@@ -1,6 +1,6 @@
 from unittest import TestCase
 from server import app
-from model import db, connect_to_db, User, UserStatus, LevelLookup, Goal, GoalStatus, Monster, Attack, SleepStatus, Friendship
+from model import db, connect_to_db, User, UserStatus, LevelLookup, Goal, GoalStatus, Monster, Attack, SleepStatus, Friendship, Team
 import server
 import datetime
 from selenium import webdriver
@@ -188,6 +188,24 @@ class UserTest(TestCase):
         result = self.client.get("/friend_request.json")
         self.assertIn("Test_friend", result.data)
 
+    def test_friend_request_post(self):
+        result = self.client.post("/friend_request.json", data={"friendship_id":1})
+        self.assertIn("1",result.data)
+        result = self.client.get("/friend_request.json")
+        self.assertEqual("[]\n", result.data)
+        result = self.client.get("/friends")
+        self.assertIn("Test_friend", result.data)
+
+    def test_add_friend_json(self):
+        result = self.client.post("/add_friend.json",data={"user_id":2})
+        self.assertIn("success", result.data)
+        
+    def test_get_leaderboard_json(self):
+        result = self.client.get("/get_leaderboard.json")
+        self.assertIn("test_team", result.data)
+        self.assertIn("20", result.data)
+
+
 # class SeleniumTests(TestCase):
 
 #     def setUp(self):
@@ -281,6 +299,11 @@ def example_data():
     fs = Friendship(user_id_1=user2.user_id, user_id_2=user.user_id, verified=False)
     db.session.add(fs)
     db.session.commit()
+
+
+    team = Team.create_team("test_team", 1)
+    team2 = Team.create_team("test_team2", 2)
+
     print User.query.all()
 
 

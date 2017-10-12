@@ -1,3 +1,5 @@
+// import React from 'react';
+// import ReactDOM from "react-dom";
 "use strict";
 
 
@@ -363,10 +365,10 @@ class PlayerLink extends React.Component {
 	render (){
 	if (this.props.friend){
 	return (
-	<h3> <a href={this.makeHref()} > {this.props.username} </a> </h3>
+	<h3 className="team_name"> <a href={this.makeHref()} > {this.props.username} </a> </h3>
 	)} else {
 	return (
-	<h3> {this.props.username} </h3>
+	<h3 className="team_name"> {this.props.username} </h3>
 	)
 	}
 	}

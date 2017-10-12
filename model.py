@@ -187,7 +187,7 @@ class User(db.Model):
         return friend_id in friend_request_list
 
     def get_current_team(self):
-        teams = [userteam.team for userteam in self.userteam if userteam.valid_from < datetime.datetime.now() and userteam.valid_to > datetime.datetime.now()]
+        teams = [userteam.team for userteam in self.userteam if userteam.valid_from <= datetime.datetime.now() and userteam.valid_to > datetime.datetime.now()]
         if teams:
             return teams[0]
         else:

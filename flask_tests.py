@@ -1,6 +1,6 @@
 from unittest import TestCase
 from server import app
-from model import db, connect_to_db, User, UserStatus, LevelLookup, Goal, GoalStatus, Monster, Attack, SleepStatus, Friendship, Team
+from model import db, connect_to_db, User, UserStatus, LevelLookup, Goal, GoalStatus, Monster, Attack, SleepStatus, Friendship, Team, TeamInvite
 import server
 import datetime
 from selenium import webdriver
@@ -75,8 +75,9 @@ class NoUserTest(TestCase):
 
 
 
-class UserTest(TestCase):
+class UserTest3rdOct(TestCase):
 
+    @freeze_time("2017-10-03")
     def setUp(self):
         self.client = app.test_client()
         app.config['TESTING'] = True
@@ -92,6 +93,7 @@ class UserTest(TestCase):
               sess['user_id'] = 1
               sess["login_time"] = datetime.datetime.now()
 
+    @freeze_time("2017-10-03")
     def tearDown(self):
         db.session.close()
         db.drop_all()
@@ -104,22 +106,50 @@ class UserTest(TestCase):
         self.assertIn("Log Out", result.data)
         self.assertIn("current quest is to complete 100 Steps", result.data)
 
+    @freeze_time("2017-10-03")
+    def test_userpage_friend(self):
+
+        result = self.client.get("/user/Test2_friend", follow_redirects=True)
+        self.assertNotIn("Welcome", result.data)
+        self.assertIn("Test2_friend's profile", result.data)
+        self.assertIn("Log Out", result.data)
+
+    @freeze_time("2017-10-03")
+    def test_userpage_notfriend(self):
+
+        result = self.client.get("/user/Test_friend", follow_redirects=True)
+        self.assertIn("Welcome", result.data)
+        self.assertIn("You must be friends with Test_friend to view their page", result.data)
+        self.assertIn("Log Out", result.data)
+
+
+    @freeze_time("2017-10-04")
+    def test_userpage_timeout(self):
+
+        result = self.client.get("/user/ToK", follow_redirects=True)
+        self.assertNotIn("Welcome, ToK!", result.data)
+        self.assertIn("please log in again", result.data)
+
+
+    @freeze_time("2017-10-03")
     def test_outcome_json(self):
         result = self.client.get("/outcome.json")
         self.assertIn("monster", result.data)
         self.assertIn("attack", result.data)
 
-
+    @freeze_time("2017-10-03")
     def test_settings_page(self):
         result = self.client.get("/settings")
         self.assertIn("Email address: test@test.com", result.data)
         self.assertIn("Log Out", result.data)
 
+    @freeze_time("2017-10-03")
     def test_enter_sleep_page(self):
         result = self.client.get("/enter_sleep")
         self.assertIn("Bedtime", result.data)
         self.assertIn("Wake up time", result.data)
 
+    @freeze_time("2017-10-03")
     def test_set_goal_page(self):
         result = self.client.get("/set_goal")
         self.assertIn("Goal value", result.data)
@@ -127,6 +157,10 @@ class UserTest(TestCase):
 
     @freeze_time("2017-10-04")
     def test_set_goal(self):
+        with self.client as c:
+          with c.session_transaction() as sess:
+              sess['user_id'] = 1
+              sess["login_time"] = datetime.datetime.now()
         server.flow.step1_get_authorize_url=_mock_auth
         result = self.client.post("/set_goal", data={"goal_type":"Steps",
                                                       "valid_from": "2017-10-03",
@@ -146,6 +180,7 @@ class UserTest(TestCase):
         self.assertIn("current quest is to complete 8.0 hours of Sleep",result.data)
 
 
+    @freeze_time("2017-10-03")
     def test_reroll(self):
         result = self.client.post("/reroll", data={}, follow_redirects=True)
         self.assertIn("XP: 0", result.data)
@@ -168,6 +203,7 @@ class UserTest(TestCase):
                                                         "valid_to":"2017-10-03"}, follow_redirects=True)
         self.assertIn("500", result.data)
 
+    @freeze_time("2017-10-03")
     def test_update_settings_json(self):
         result = self.client.post("/update_settings.json", data={"email":"test2@test.com", "confirm_email": "test2@test.com"},
                                 follow_redirects=True)
@@ -175,19 +211,23 @@ class UserTest(TestCase):
         result = self.client.get("/settings")
         self.assertIn("Email address: test2@test.com", result.data)
 
+    @freeze_time("2017-10-03")
     def test_logout(self):
         result = self.client.get("/logout", follow_redirects=True)
         self.assertIn("You are now logged out", result.data)
         self.assertIn("Log In", result.data)
 
+    @freeze_time("2017-10-03")
     def test_users_json(self):
         result = self.client.get("/users.json", query_string={"search_term":""})
         self.assertIn("Test_friend", result.data)
 
+    @freeze_time("2017-10-03")
     def test_friend_requests_json(self):
         result = self.client.get("/friend_request.json")
         self.assertIn("Test_friend", result.data)
 
+    @freeze_time("2017-10-03")
     def test_friend_request_post(self):
         result = self.client.post("/friend_request.json", data={"friendship_id":1})
         self.assertIn("1",result.data)
@@ -196,14 +236,91 @@ class UserTest(TestCase):
         result = self.client.get("/friends")
         self.assertIn("Test_friend", result.data)
 
+    @freeze_time("2017-10-03")
     def test_add_friend_json(self):
         result = self.client.post("/add_friend.json",data={"user_id":2})
         self.assertIn("success", result.data)
-        
+     
+    
+    @freeze_time("2017-10-03")
+    def test_make_new_team_json(self):
+        result = self.client.post("/make_new_team.json", data={"teamname":"What_a_lovely_team"})
+        self.assertIn("What_a_lovely_team", result.data)
+
+    @freeze_time("2017-10-03")
+    def test_get_friends_json(self):
+        result = self.client.get("/get_friends.json")
+        self.assertIn("Test2_friend", result.data)
+        self.assertNotIn("Test_friend", result.data)
+
+
+
+
+class UserTest4thOct(TestCase):
+
+    @freeze_time("2017-10-03")
+    def setUp(self):
+        self.client = app.test_client()
+        app.config['TESTING'] = True
+        connect_to_db(app, "postgresql:///testdb")
+
+        # Create tables and add sample data
+        db.create_all()
+        example_data()
+
+        app.config['SECRET_KEY'] = 'key'
+        with self.client as c:
+          with c.session_transaction() as sess:
+              sess['user_id'] = 1
+              sess["login_time"] = datetime.datetime.strptime('2017-10-04','%Y-%m-%d')
+
+    @freeze_time("2017-10-04")
+    def tearDown(self):
+        db.session.close()
+        db.drop_all()
+
+
+    @freeze_time("2017-10-04")
+    def test_leave_team_json(self):
+        result = self.client.post("/leave_team.json", data={"teamname": "test_team"})
+        self.assertIn("test_team", result.data)
+        result = self.client.get("/get_team.json",query_string={"teamname":"test_team"})
+        self.assertNotIn("ToK", result.data)
+
+    @freeze_time("2017-10-04")
+    def test_get_team_requests_json(self):
+        result = self.client.get("/get_team_requests.json")
+        self.assertIn("Test_friend", result.data)
+        self.assertIn("test_team2", result.data)
+
+    @freeze_time("2017-10-04")
+    def test_join_team_json(self):
+        result = self.client.post("/join_team.json", data={"invite_id":1, "teamname":"test_team2"})
+        self.assertIn("test_team2", result.data)
+        # result = self.client.get("/get_team.json",query_string={"teamname":"test_team"})
+        # self.assertNotIn("ToK", result.data)
+        # result = self.client.get("/get_team_requests.json")
+        # self.assertNotIn("Test_friend", result.data)
+        # self.assertNotIn("test_team2", result.data)
+
+
+    @freeze_time("2017-10-04")
+    def test_get_team_json(self):
+        result = self.client.get("/get_team.json",query_string={"teamname":"test_team"})
+        self.assertIn("ToK", result.data)
+        result = self.client.get("/get_team.json",query_string={"teamname":""})
+        self.assertIn("ToK", result.data)
+
+    @freeze_time("2017-10-04")   
     def test_get_leaderboard_json(self):
         result = self.client.get("/get_leaderboard.json")
         self.assertIn("test_team", result.data)
         self.assertIn("20", result.data)
+
+    @freeze_time("2017-10-04")
+    def test_invite_friend_json(self):
+        result = self.client.post("/invite_friend.json", data={"friendname":"Test_friend"})
+        self.assertIn("Test_friend was invited to join test_team", result.data)
 
 
 # class SeleniumTests(TestCase):
@@ -295,14 +412,31 @@ def example_data():
     db.session.add(us)
     db.session.commit()
 
+    user3 = User(username="Test2_friend", password="1234", email="test2@test.com")
+    db.session.add(user3)
+    db.session.commit()
+    user3 = User.query.filter(User.username=="Test2_friend").one()
+    us2 = UserStatus(user_id=user3.user_id, current_xp=20, current_hp=12, level=1, date_recorded=datetime.datetime.now())
+    db.session.add(us2)
+    db.session.commit()
 
     fs = Friendship(user_id_1=user2.user_id, user_id_2=user.user_id, verified=False)
     db.session.add(fs)
     db.session.commit()
 
+    fs2 = Friendship(user_id_1=user3.user_id, user_id_2=user.user_id, verified=True)
+    db.session.add(fs2)
+    db.session.commit()
 
     team = Team.create_team("test_team", 1)
     team2 = Team.create_team("test_team2", 2)
+
+    print "TEAM STUFF USER 1", user.userteam[0].valid_from, user.userteam[0].valid_to
+    print "TEAM STUFF USER 2", user2.userteam[0].valid_from, user2.userteam[0].valid_to
+
+    teaminvite = TeamInvite(user_id=user.user_id, inviter_id=2, team_id=2, resolved=False)
+    db.session.add(teaminvite)
+    db.session.commit()
 
     print User.query.all()
 

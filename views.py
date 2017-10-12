@@ -47,7 +47,7 @@ def profile_page(username):
 	print "user id", session.get("user_id")
 	is_friend = user.check_friendship(session.get("user_id"))
 	if session.get("user_id", "") != user.user_id and not is_friend:
-		flash("You must be friends with %s to view this page"% username)
+		flash("You must be friends with %s to view their page"% username)
 		return redirect("/") 
 	else:
 		now = datetime.datetime.now()

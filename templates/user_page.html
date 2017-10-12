@@ -6,6 +6,11 @@
 <h1 id="welcome"> {{username}}'s profile </h1>
 {%else%}
 <h1 id="welcome"> Welcome, {{username}}! </h1>
+<div id="flashed_messages">
+{%for message in get_flashed_messages()%}
+{{message}}
+{%endfor%}
+</div>
 {%endif%}
 <div class = "col-md-4 col-xs-12">
 <div id="stats">

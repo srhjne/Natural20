@@ -4,3 +4,4 @@ credentials*
 .coverage
 geckodriver*
 htmlcov/
+node_modules/

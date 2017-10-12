@@ -1,6 +1,6 @@
 from unittest import TestCase
 from server import app
-from model import db, connect_to_db, User, UserStatus, LevelLookup, Goal, GoalStatus, Monster, Attack, SleepStatus
+from model import db, connect_to_db, User, UserStatus, LevelLookup, Goal, GoalStatus, Monster, Attack, SleepStatus, Friendship
 import server
 import datetime
 from selenium import webdriver
@@ -96,12 +96,13 @@ class UserTest(TestCase):
         db.session.close()
         db.drop_all()
 
+    @freeze_time("2017-10-03")
     def test_userpage(self):
 
         result = self.client.get("/user/ToK")
         self.assertIn("Welcome, ToK!", result.data)
         self.assertIn("Log Out", result.data)
-        self.assertIn("Your current quest is to complete 100 Steps", result.data)
+        self.assertIn("current quest is to complete 100 Steps", result.data)
 
     def test_outcome_json(self):
         result = self.client.get("/outcome.json")
@@ -124,7 +125,7 @@ class UserTest(TestCase):
         self.assertIn("Goal value", result.data)
         self.assertIn("Quest type:", result.data)
 
-
+    @freeze_time("2017-10-04")
     def test_set_goal(self):
         server.flow.step1_get_authorize_url=_mock_auth
         result = self.client.post("/set_goal", data={"goal_type":"Steps",
@@ -132,8 +133,9 @@ class UserTest(TestCase):
                                                       "valid_to": "2017-10-10",
                                                       "value": 100000,
                                                       "frequency": "Total"}, follow_redirects=True)
-        self.assertIn("Your current quest is to complete 100000 Steps",result.data)
+        self.assertIn("current quest is to complete 100000 Steps",result.data)
 
+    @freeze_time("2017-10-03")
     def test_set_goal_sleep(self):
         server.flow.step1_get_authorize_url=_mock_auth
         result = self.client.post("/set_goal", data={"goal_type":"Steps",
@@ -141,7 +143,7 @@ class UserTest(TestCase):
                                                       "valid_to": "2017-10-10",
                                                       "value": 8*60*60,
                                                       "frequency": "Daily"}, follow_redirects=True)
-        self.assertIn("Your current quest is to complete 8.0 hours of Sleep",result.data)
+        self.assertIn("current quest is to complete 8.0 hours of Sleep",result.data)
 
 
     def test_reroll(self):
@@ -159,6 +161,7 @@ class UserTest(TestCase):
         self.assertIn(str(8*60*60),result.data)
         self.assertIn("bedtime", result.data)
 
+    @freeze_time("2017-10-02")
     def test_calc_xp(self):
         result = self.client.get("/calc_xp.json", query_string={"goal_type": "Steps", "value": 2000000,
                                                         "frequency": "Total", "valid_from":"2017-10-02",
@@ -177,49 +180,56 @@ class UserTest(TestCase):
         self.assertIn("You are now logged out", result.data)
         self.assertIn("Log In", result.data)
 
+    def test_users_json(self):
+        result = self.client.get("/users.json", query_string={"search_term":""})
+        self.assertIn("Test_friend", result.data)
 
-class SeleniumTests(TestCase):
+    def test_friend_requests_json(self):
+        result = self.client.get("/friend_request.json")
+        self.assertIn("Test_friend", result.data)
 
-    def setUp(self):
-        self.browser_type = "Firefox"
-        if self.browser_type == "Firefox":
-            self.browser = webdriver.Firefox()
-        elif self.browser_type == "Chrome":
-            self.browser = webdriver.Chrome()
-        server.flow.step1_get_authorize_url=_mock_auth
-        self.browser.get("http://localhost:5000/login")
-        username = self.browser.find_element_by_id('username')
-        username.send_keys("ToK")
-        password = self.browser.find_element_by_id('password')
-        password.send_keys("1234")
-        submit = self.browser.find_element_by_id("submit")
-        submit.click()
+# class SeleniumTests(TestCase):
 
-    def tearDown(self):
-        self.browser.quit()
+#     def setUp(self):
+#         self.browser_type = "Firefox"
+#         if self.browser_type == "Firefox":
+#             self.browser = webdriver.Firefox()
+#         elif self.browser_type == "Chrome":
+#             self.browser = webdriver.Chrome()
+#         server.flow.step1_get_authorize_url=_mock_auth
+#         self.browser.get("http://localhost:5000/login")
+#         username = self.browser.find_element_by_id('username')
+#         username.send_keys("ToK")
+#         password = self.browser.find_element_by_id('password')
+#         password.send_keys("1234")
+#         submit = self.browser.find_element_by_id("submit")
+#         submit.click()
+
+#     def tearDown(self):
+#         self.browser.quit()
        
 
-    def test_set_goal(self):
-        self.browser.get('http://localhost:5000/set_goal')
+#     def test_set_goal(self):
+#         self.browser.get('http://localhost:5000/set_goal')
 
-        x = self.browser.find_element_by_id('valid_from')
+#         x = self.browser.find_element_by_id('valid_from')
         
-        y = self.browser.find_element_by_id('valid_to')
-        if self.browser_type == "Firefox":
-            x.send_keys("2017-10-01")
-            y.send_keys("2017-10-02")
-        elif self.browser_type == "Chrome":
-            x.send_keys("10-01-2017")
-            y.send_keys("10-02-2017")
+#         y = self.browser.find_element_by_id('valid_to')
+#         if self.browser_type == "Firefox":
+#             x.send_keys("2017-10-01")
+#             y.send_keys("2017-10-02")
+#         elif self.browser_type == "Chrome":
+#             x.send_keys("10-01-2017")
+#             y.send_keys("10-02-2017")
 
-        y = self.browser.find_element_by_id('value')
-        y.send_keys("20000")
+#         y = self.browser.find_element_by_id('value')
+#         y.send_keys("20000")
 
-        btn = self.browser.find_element_by_id('calc_xp')
-        btn.click()
+#         btn = self.browser.find_element_by_id('calc_xp')
+#         btn.click()
 
-        result = self.browser.find_element_by_id('show_xp')
-        self.assertEqual(result.text, "500")
+#         result = self.browser.find_element_by_id('show_xp')
+#         self.assertEqual(result.text, "500")
 
 
 
@@ -227,8 +237,10 @@ class SeleniumTests(TestCase):
 
 def example_data():
     user = User(username="ToK", password="1234", email="test@test.com")
-    l = LevelLookup(level=1, min_cr =0, max_cr=0.25, required_xp=0, hit_point_max=12)
-    db.session.add_all([user,l])
+    if not LevelLookup.query.get(1):
+        l = LevelLookup(level=1, min_cr =0, max_cr=0.25, required_xp=0, hit_point_max=12)
+        db.session.add(l)
+    db.session.add(user)
     db.session.commit()
     user = User.query.filter(User.username=="ToK").one()
     us = UserStatus(user_id=user.user_id, current_xp=20, current_hp=12, level=1, date_recorded=datetime.datetime.now())
@@ -256,6 +268,19 @@ def example_data():
     db.session.add(attack)
     db.session.commit()
 
+
+    user2 = User(username="Test_friend", password="1234", email="test2@test.com")
+    db.session.add(user2)
+    db.session.commit()
+    user2 = User.query.filter(User.username=="Test_friend").one()
+    us = UserStatus(user_id=user2.user_id, current_xp=20, current_hp=12, level=1, date_recorded=datetime.datetime.now())
+    db.session.add(us)
+    db.session.commit()
+
+
+    fs = Friendship(user_id_1=user2.user_id, user_id_2=user.user_id, verified=False)
+    db.session.add(fs)
+    db.session.commit()
     print User.query.all()
 
 

@@ -10,12 +10,16 @@ class ContentBox extends React.Component {
             teamname: "",
             teamname_view: "",
             friends: [],
+            team_requests: []
         };
         
         this.getLeaderboard = this.getLeaderboard.bind(this);
         this.getFriends = this.getFriends.bind(this);
         this.getTeam = this.getTeam.bind(this);
         this.leaveTeam = this.leaveTeam.bind(this);
+        this.getTeamRequests = this.getTeamRequests.bind(this);
+        this.joinTeam = this.joinTeam.bind(this);
+        this.createTeam = this.createTeam.bind(this);
         console.log(this.state);
         
     }
@@ -26,6 +30,7 @@ class ContentBox extends React.Component {
     	this.getFriends();
         this.getTeam(this.state.teamname);
         this.setState({teamname: this.state.teamname_view});
+        this.getTeamRequests();
         console.log("component did mount");
         console.log(this.state);
     }
@@ -78,21 +83,139 @@ class ContentBox extends React.Component {
     	}.bind(this));
     }
 
+    getTeamRequests(){
+    	$.get("/get_team_requests.json", function (result){
+    		if (result){
+    			this.setState({team_requests: result});
+    		}
+    	}.bind(this))
+    }
+
+    joinTeam(team_request){
+		var retVal = confirm("Joining a new team will cause you to leave your current team. Are you sure you want to leave this team?");
+		if (retVal){
+			$.post("/join_team.json",team_request, function(result){
+				console.log(result);
+				if (result) {
+					console.log("inside jointeam");
+					console.log(this);
+					this.setState({teamname:result.teamname});
+					this.getTeam(this.state.teamname);
+					this.getTeamRequests();
+				} 
+
+			}.bind(this));
+		}
+		
+	}
+
+
+	createTeam(){
+		var teamname = $("#new_teamname").val();
+		if (teamname === "") {
+			alert("You need to fill in a team name")
+		} else {
+			var retVal = confirm("Forming a new team will cause you to leave your current team. Are you sure you want to leave this team?");
+			if (retVal){
+				console.log("new teamname is "+teamname);
+				$.post("/make_new_team.json", {teamname: teamname}, function (result){
+					console.log(result);
+					console.log("testing");
+					if (result){
+						this.setState({teamname: result["teamname"]});
+						this.getTeam(this.state.teamname);
+						this.getLeaderboard();
+					} else {
+						alert("That team name is already taken")
+					}
+				}.bind(this))
+
+			}
+		}
+		
+	}
+
      render() {
         return (
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-sm-3 col-xs-12 teams">
                     	<TeamList teams={this.state.teams} teamChange = {this.getTeam}> </TeamList>
-                        
+                        <NewTeam createTeam = {this.createTeam}/>
                     </div>
                     <div className="col-sm-9 col-xs-12 my-team">
+                    <h1> Team Detail </h1>
+                    {this.state.team_requests.map(function(team_request){
+                    	return <TeamRequest team_request={team_request} joinTeam={this.joinTeam.bind(this,team_request)}/>
+                    }.bind(this))}
+                    	
                         <TeamDetail teamname={this.state.teamname}
                         teamname_view={this.state.teamname_view}  team_members={this.state.team_members} friends={this.state.friends} leaveTeam={this.leaveTeam.bind(this, this.state.teamname)}> </TeamDetail>
                     </div>
                 </div>
             </div>
         );
+	}
+
+}
+
+class NewTeam extends React.Component {
+	constructor(props){
+		super(props);
+
+	}
+
+	render(){
+		return (
+			<div id="new-team-div">
+			<h1> Create new team </h1>
+			
+			<table>
+			<tr>
+			<td>
+			Team name  
+			</td>
+			</tr>
+			<tr>
+
+			<td>
+			 <input id="new_teamname" type="text" name="teamname"/>
+			</td>
+			</tr>
+			<tr>
+			<td>
+			<button onClick={this.props.createTeam} > Create Team </button>
+			</td>
+			</tr>
+			</table>
+			
+			</div>
+			)
+	}
+}
+
+
+class TeamRequest extends React.Component {
+	constructor(props){
+		super(props);
+		console.log(this.props);
+
+	}
+
+
+
+	render (){
+		
+		return (
+			<div>
+			Stories of your adventuring have reached across the kingdom
+			<br/>
+			<br/>
+			{this.props.team_request.inviter_name} wants you to join the {this.props.team_request.teamname} Guild
+			<button className="btn btn-default" onClick={this.props.joinTeam}>Join team </button>
+			</div>
+			)
+		
 	}
 
 }
@@ -155,8 +278,8 @@ class TeamDetail extends React.Component {
 	}
 
 
-	isFriend (user_id) {
-		if (this.props.friends.includes(parseInt(user_id))){
+	isFriend (username) {
+		if (this.props.friends.includes(username)){
 			
 			return true;
 		}else {
@@ -171,10 +294,10 @@ class TeamDetail extends React.Component {
 	render () {
 		return (
 			<div>
-			<h1> Team Detail </h1>
-			<TeamJoin teamname={this.props.teamname} teamname_view={this.props.teamname_view} leaveTeam={this.props.leaveTeam}/>
+			
+			<TeamJoin teamname={this.props.teamname} teamname_view={this.props.teamname_view} leaveTeam={this.props.leaveTeam} friends={this.props.friends}/>
 			 {Object.keys(this.props.team_members).map(function(player_id){
-                    return <PlayerDetail player_id ={player_id} team_member={this.props.team_members[player_id]} friend={this.isFriend(player_id)}></PlayerDetail>;
+                    return <PlayerDetail player_id ={player_id} team_member={this.props.team_members[player_id]} friend={this.isFriend(this.props.team_members[player_id]['username'])}></PlayerDetail>;
                   }.bind(this))}
 			
 			
@@ -257,8 +380,13 @@ class TeamJoin extends React.Component {
 	console.log(this.props);
 	}
 
-	inviteTeamMember(){
-		console.log(this);
+	inviteFriend(friendname){
+		console.log("friendname is"+friendname);
+		$.post("/invite_friend.json", {friendname: friendname}, function(result){
+			if (result){
+				$("#addfriendModal").html("<p>"+result+"</p>");
+			}
+		});
 	}
 
 	
@@ -293,14 +421,16 @@ class TeamJoin extends React.Component {
 
 				            </div>
 
-				            <div className="modal-body">
-				            	<button type="button" className="btn btn-primary">friend one</button>
+				            <div  className="modal-body">
 
-				            	<button type="button" className="btn btn-primary">friend two</button>
+				            {this.props.friends.map( function(friendname){
+				            	return <button type="button" className="btn btn-primary" onClick={this.inviteFriend.bind(this,friendname)}>{friendname}</button>
+				            }.bind(this))
+				        	}
+				            	
+				            <div id="addfriendModal">
 
-				            	<button type="button" className="btn btn-primary">friend three</button>
-
-				                
+				            </div>  
 				            </div>
 
 				        </div>
@@ -316,51 +446,6 @@ class TeamJoin extends React.Component {
 }
 
 
-class inviteModal extends React.Component{
-	constructor(props){
-		super(props);
-	}
-
-	render (){
-		return (<div id="myModal" className="modal fade">
-
-    <div className="modal-dialog">
-
-        <div className="modal-content">
-
-            <div className="modal-header">
-
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-
-                <h4 className="modal-title">Confirmation</h4>
-
-            </div>
-
-            <div className="modal-body">
-
-                <p>Do you want to save changes you made to document before closing?</p>
-
-                <p className="text-warning"><small>If you dont save, your changes will be lost.</small></p>
-
-            </div>
-
-            <div className="modal-footer">
-
-                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-
-                <button type="button" className="btn btn-primary">Save changes</button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-			)
-
-	}
-}
 
 ReactDOM.render(
     <ContentBox />,

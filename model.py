@@ -205,6 +205,16 @@ class User(db.Model):
             print current_userteam[0].team.teamname
             return current_userteam[0].team.teamname
 
+    def get_team_requests(self):
+        team_requests = TeamInvite.query.filter(TeamInvite.user_id ==self.user_id).all()
+        return team_requests
+
+    def join_team(self, team_id):
+        self.leave_current_team()
+        userteam = UserTeam.make_new_userteam(user_id = self.user_id, team_id = team_id)
+        db.session.add(userteam)
+        db.session.commit()
+
 
 
 class Goal(db.Model):
@@ -400,6 +410,17 @@ class Team(db.Model):
         user_id_list = [userteam.user_id for userteam in self.userteam if userteam.valid_from < datetime.datetime.now() and userteam.valid_to > datetime.datetime.now()]
         return [User.query.get(user_id) for user_id in user_id_list]
 
+    @classmethod
+    def create_team(cls, teamname, user_id):
+        team = cls(teamname=teamname)
+        db.session.add(team)
+        db.session.commit()
+        team_db = cls.query.filter(cls.teamname == teamname).one()
+        userteam = UserTeam.make_new_userteam(user_id=user_id, team_id=team_db.team_id)
+        db.session.add(userteam)
+        db.session.commit()
+        return team_db
+
 class UserTeam(db.Model):
 
     __tablename__ = "userteams"
@@ -416,7 +437,26 @@ class UserTeam(db.Model):
     def __repr__(self):
         return "<UserTeam team_id=%s, user_id=%s>"%(self.team_id, self.user_id)
 
+    @classmethod
+    def make_new_userteam(cls, user_id, team_id):
+        valid_to= datetime.datetime.strptime("31-12-2999", "%d-%m-%Y")
+        return cls(user_id=user_id, team_id=team_id, valid_from=datetime.datetime.now(), valid_to=valid_to)
 
+
+class TeamInvite(db.Model):
+
+    __tablename__ = "teaminvites"
+
+    invite_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    inviter_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey("teams.team_id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    resolved = db.Column(db.Boolean, nullable=True)
+
+    def __repr__(self):
+        return "<TeamInvite from inviter_id=%s to user_id=%s"%(self.inviter_id, self.user_id)
+
+    team = db.relationship("Team", backref=db.backref("teaminvite"))
 
 def connect_to_db(app, uri='postgresql:///natural20'):
     """Connect the database to our Flask app."""

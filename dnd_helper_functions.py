@@ -54,10 +54,10 @@ def get_team_rankings(dictionary=False):
 		team_xp = 0
 		print team
 		print team.userteam
-		team_size = len(team.userteam)
-		for userteam in team.userteam:
-			user_id = userteam.user_id
-			user = User.query.get(user_id)
+		team_size = len(team.get_current_team_members())
+		if team_size == 0:
+			continue
+		for user in team.get_current_team_members():
 			print user
 			print user.get_current_status()
 			user_xp = user.get_current_status().current_xp

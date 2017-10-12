@@ -192,7 +192,7 @@ def make_more_users_network():
 	for i in range(2,34,2):
 		teams = Team.query.all()
 		team_id = random.choice(teams).team_id
-		valid_from = datetime.datetime.strptime("31-12-2999", "%d-%m-%Y")
+		valid_to= datetime.datetime.strptime("31-12-2999", "%d-%m-%Y")
 		userteam = UserTeam(user_id=i, team_id=team_id, valid_from=datetime.datetime.now(), valid_to=valid_to)
 		db.session.add(userteam)
 		db.session.commit()

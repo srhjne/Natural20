@@ -6,7 +6,7 @@ from oauth2client.file import Storage
 
 from flask import jsonify, render_template, redirect, request, flash, session
 
-from model import db, User, Goal, GoalStatus, UserStatus, Monster, Attack, LevelLookup, SleepStatus, Friendship, Team, UserTeam
+from model import db, User, Goal, GoalStatus, UserStatus, Monster, Attack, LevelLookup, SleepStatus, Friendship, Team, UserTeam, TeamInvite
 
 import os
 import datetime
@@ -334,12 +334,12 @@ def record_sleep():
 	return redirect("user/%s"%user.username)
 
 
-@app.route("/friend_requests")
-def friend_requests():
-	user = User.query.get(session["user_id"])
-	friends = user.get_friend_requests()
-	print friends
-	return "friends printed %s"%friends
+# @app.route("/friend_requests")
+# def friend_requests():
+# 	user = User.query.get(session["user_id"])
+# 	friends = user.get_friend_requests()
+# 	print friends
+# 	return "friends printed %s"%friends
 
 
 @app.route("/add_friends")
@@ -435,8 +435,8 @@ def get_friends():
 	user = User.query.get(session["user_id"])
 	friends = user.get_friends()
 	print friends
-	friend_id_list = [ friend[0].user_id for friend in friends]
-	return jsonify(friend_id_list)
+	friendname_list = [ friend[0].username for friend in friends]
+	return jsonify(friendname_list)
 
 @app.route("/leave_team.json", methods=["POST"])
 def leave_team():
@@ -451,10 +451,69 @@ def leave_team():
 		return jsonify(user.leave_current_team())
 
 
-@app.route("/invite_friends.json", methods=["POST"])
+@app.route("/invite_friend.json", methods=["POST"])
 def invite_friends():
 	user = User.query.get(session["user_id"])
 	team = user.get_current_team()
+	friendname = request.form.get("friendname")
+	friend = User.query.filter(User.username == friendname).first()
+	print "I am in invite friends"
+	print user, team, friend
+	if not friend:
+		return jsonify(False)
+	if friend.get_current_team() == team:
+		return jsonify("%s is already a member of %s"%(friend.username, team.teamname))
+	current_invite = TeamInvite.query.filter(TeamInvite.user_id==friend.user_id, TeamInvite.resolved==False, TeamInvite.team_id==team.team_id).all()
+	if current_invite:
+		return jsonify("%s has already been invited to %s"%(friend.username, team.teamname))
+	teaminvite = TeamInvite(inviter_id = user.user_id, user_id=friend.user_id, resolved=False, team_id=team.team_id)
+	db.session.add(teaminvite)
+	db.session.commit()
+	return jsonify("%s was invited to join %s"%(friend.username, team.teamname))
+
+@app.route("/get_team_requests.json")
+def get_team_requests():
+	user = User.query.get(session["user_id"])
+	team_requests = user.get_team_requests()
+	if not team_requests:
+		return jsonify([])
+	json_list = []
+	for invite in team_requests:
+		if invite.resolved == False:
+			inviter = User.query.get(invite.inviter_id)
+			json_list.append({"invite_id":invite.invite_id,"inviter_name": inviter.username, "teamname":invite.team.teamname})
+
+	return jsonify(json_list)
+
+@app.route("/join_team.json", methods=["POST"])
+def join_team():
+	user = User.query.get(session["user_id"])
+	teamname = request.form.get("teamname")
+	invite_id = request.form.get("invite_id")
+	if not teamname or not invite_id:
+		return jsonify(False)
+	teamrequest = TeamInvite.query.get(invite_id)
+	team = Team.query.filter(Team.teamname == teamname).first()
+	if not team:
+		return jsonify(False)
+	user.join_team(team.team_id) 
+	new_team = user.get_current_team()
+	teaminvite = TeamInvite.query.get(invite_id)
+	teaminvite.resolved = True
+	db.session.commit()
+	return jsonify({"teamname": new_team.teamname})
 
 
-	return jsonify([])
+@app.route("/make_new_team.json", methods=["POST"])
+def make_new_team():
+	user = User.query.get(session["user_id"])
+	teamname = request.form.get("teamname")
+	team_check = Team.query.filter(Team.teamname == teamname).all()
+	print "team_check", team_check
+	if len(team_check) > 0:
+		return jsonify(False)
+	else:
+		user.leave_current_team()
+		team = Team.create_team(teamname=teamname, user_id=user.user_id)
+
+	return jsonify({"teamname": team.teamname})

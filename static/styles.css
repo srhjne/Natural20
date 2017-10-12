@@ -90,10 +90,7 @@ div.alert {
 	margin-right: auto;
 }
 
-div.friends {
-	border: solid 3px red;
-	background-color: red;
-}
+
 
 div.leaderboard-element-name {
 	display: inline-flex;
@@ -104,4 +101,13 @@ div.leaderboard-element-name {
 div.leaderboard-element-xp {
 	display:inline-flex;
 	width:20%;
+}
+
+div.new-team-div {
+	border: solid 3px black;
+	border-radius: 4px;
+}
+
+div.new-team-div h1{
+	font-size: 50px;
 }

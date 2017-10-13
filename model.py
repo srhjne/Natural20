@@ -215,6 +215,18 @@ class User(db.Model):
         db.session.add(userteam)
         db.session.commit()
 
+    def get_team_messages(self):
+        updates = self.userteameffect
+        messages = []
+        for update in updates:
+            teammate = User.query.get(update.teammate_id)
+            if teammate:
+                if update.xp_gain > 0:
+                    messages.append("You helped %s succeed in their quest! You gain %s XP"%(teammate.username, update.xp_gain))
+                if update.hp_loss > 0:
+                    messages.append("You failed to help %s in their quest and so they suffered a crushing defeat! You lose %s HP"%(teammate.username, update.hp_loss))             
+        return messages
+
 
 
 class Goal(db.Model):
@@ -457,6 +469,25 @@ class TeamInvite(db.Model):
         return "<TeamInvite from inviter_id=%s to user_id=%s"%(self.inviter_id, self.user_id)
 
     team = db.relationship("Team", backref=db.backref("teaminvite"))
+
+
+class UserTeamEffect(db.Model):
+
+
+    __tablename__ = "userteameffects"
+
+
+    effect_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    teammate_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    xp_gain = db.Column(db.Integer, nullable=True)
+    hp_loss = db.Column(db.Integer, nullable=True)
+    resolved = db.Column(db.Boolean, nullable=False)
+
+
+    user = db.relationship("User",foreign_keys=[user_id], backref=db.backref("userteameffect"))
+
+
 
 def connect_to_db(app, uri='postgresql:///natural20'):
     """Connect the database to our Flask app."""

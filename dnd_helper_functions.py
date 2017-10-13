@@ -1,4 +1,4 @@
-from model import UserStatus, db, User, Team
+from model import UserStatus, db, User, Team, UserTeamEffect
 import random
 import datetime
 
@@ -9,6 +9,9 @@ def get_outcome_dict(user):
 
 	new_xp = most_recent_status.current_xp
 	new_hp = most_recent_status.current_hp
+
+	num_wins = 0
+	num_losses = 0
 
 	goals = user.get_unresolved_overdue_goals()
 	for goal in goals:
@@ -24,6 +27,7 @@ def get_outcome_dict(user):
 			goal_list.append(goal.make_goal_info_dictionary())
 			new_xp += goal.xp
 			goal.resolved = "Y"
+			num_wins +=1
 		else:
 			# bad things happen
 			monster_list = most_recent_status.levellookup.get_suitable_monsters()
@@ -41,8 +45,25 @@ def get_outcome_dict(user):
 			new_hp -= damage_val
 
 			goal.resolved = "Y"
+			num_losses+=1
 
 	UserStatus.create_save_updated_status(user=user, new_xp=new_xp, new_hp=new_hp, current_status=most_recent_status)
+	team = user.get_current_team()
+	if team:
+		for userteam in team.userteam:
+			if userteam.user_id == user.user_id:
+				continue
+			xp_gain = num_wins*20
+			hp_loss = num_losses
+			ute = UserTeamEffect(user_id=userteam.user_id, teammate_id=user.user_id, xp_gain=xp_gain, hp_loss=hp_loss, resolved=False)
+			db.session.add(ute)
+			db.session.commit()
+			teammate = User.query.get(userteam.user_id)
+			teammate_status = teammate.get_current_status()
+			teammate_new_xp = teammate_status.current_xp+xp_gain
+			teammate_new_hp = teammate_status.current_hp-hp_loss
+			UserStatus.create_save_updated_status(user=teammate, new_xp=teammate_new_xp, new_hp=teammate_new_hp, current_status=teammate_status)
+
 	return goal_list
 
 

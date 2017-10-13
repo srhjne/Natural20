@@ -111,7 +111,7 @@ def make_first_users():
 	goal_type = "Steps"
 	valid_from = datetime.datetime.strptime("01-Oct-2017", "%d-%b-%Y")
 	valid_to = datetime.datetime.strptime("10-Oct-2017","%d-%b-%Y")
-	value = 7000
+	value = 700000
 	xp = 300
 	first_goal = Goal(user_id=user_id, goal_type=goal_type,valid_to=valid_to, 
 					  valid_from=valid_from, value=value, xp=xp, frequency="Daily")
@@ -160,7 +160,7 @@ def make_more_users_network():
 		db.session.commit()
 		GoalStatus.make_first_status(goal_type, valid_from, valid_to, value, xp, user_id)
 		level=1
-		current_xp = random.randint(20,50)*10
+		current_xp = random.randint(10,30)*10
 		current_hp = 12
 		first_user_status = UserStatus(date_recorded=valid_from,current_hp=current_hp,
 									   current_xp=current_xp, level=level, user_id=user_id)
@@ -189,7 +189,7 @@ def make_more_users_network():
 	db.session.add_all([team1,team2,team3,team4,team5])
 	db.session.commit()
 
-	for i in range(2,34,2):
+	for i in range(2,34):
 		teams = Team.query.all()
 		team_id = random.choice(teams).team_id
 		valid_to= datetime.datetime.strptime("31-12-2999", "%d-%m-%Y")

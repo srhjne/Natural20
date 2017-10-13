@@ -245,6 +245,9 @@ def login_post():
 	if users:
 		user = users[0]
 		if user.password == password:
+			messages = user.get_team_messages()
+			for message in messages:
+				flash(message)
 			session["user_id"] = user.user_id
 			session["login_time"] = datetime.datetime.now()
 			auth_uri = flow.step1_get_authorize_url()

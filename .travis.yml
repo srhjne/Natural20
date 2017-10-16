@@ -1,2 +1,4 @@
 language: python
 script: source travis_test_script
+after_success:
+  coveralls

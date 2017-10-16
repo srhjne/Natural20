@@ -1,2 +1,2 @@
 language: python
-script: GGL_ID=test GGL_SECRET=secret pytest flask_tests.py
+script: source travis_test_script

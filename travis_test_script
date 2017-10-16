@@ -1,0 +1,7 @@
+createdb testdb
+
+
+GGL_ID=test GGL_SECRET=secret pytest flask_tests.py
+
+
+dropdb testdb

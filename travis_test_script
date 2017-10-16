@@ -1,7 +1,8 @@
 createdb testdb
 
 
-GGL_ID=test GGL_SECRET=secret pytest flask_tests.py
+export GGL_ID=test 
+export GGL_SECRET=secret
 
-
+coverage run --source=. flask_tests.py
 dropdb testdb

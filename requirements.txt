@@ -1,10 +1,16 @@
+asn1crypto==0.23.0
 beautifulsoup4==4.6.0
 blinker==1.4
 bs4==0.0.1
 certifi==2017.7.27.1
+cffi==1.11.2
 chardet==3.0.4
 click==6.7
 coverage==4.4.1
+coveralls==1.2.0
+cryptography==2.1.1
+docopt==0.6.2
+enum34==1.1.6
 Flask==0.12.2
 Flask-DebugToolbar==0.10.1
 Flask-SQLAlchemy==2.2
@@ -12,6 +18,7 @@ freezegun==0.3.9
 google-api-python-client==1.6.4
 httplib2==0.10.3
 idna==2.6
+ipaddress==1.0.18
 itsdangerous==0.24
 Jinja2==2.9.6
 MarkupSafe==1.0
@@ -19,6 +26,8 @@ oauth2client==4.1.2
 psycopg2==2.7.3.1
 pyasn1==0.3.6
 pyasn1-modules==0.1.4
+pycparser==2.18
+pyOpenSSL==17.3.0
 python-dateutil==2.6.1
 requests==2.18.4
 rsa==3.4.2

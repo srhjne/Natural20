@@ -5,3 +5,5 @@ credentials*
 geckodriver*
 htmlcov/
 node_modules/
+static/boot.min.js
+static/jasmine*

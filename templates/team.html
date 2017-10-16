@@ -9,8 +9,20 @@
 <script src="http://unpkg.com/react@16.0.0/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@16.0.0/umd/react-dom.production.min.js"></script>
 
-<script src="http://unpkg.com/babel-standalone"></script>
+<!-- <script src="http://unpkg.com/babel-standalone"></script> -->
 
-<script src="/static/teams.jsx" type="text/jsx"></script>
+<!-- <script src="/static/teams.jsx" type="text/jsx"></script> -->
+
+<script src="/static/teams_babel.js"></script>
+
+{% if g.jasmine_tests %}
+    <!-- stuff for testing -->
+    <link rel="stylesheet" href="/static/jasmine.min.css">
+    <script src="/static/jasmine.min.js"></script>
+    <script src="/static/jasmine-html.min.js"></script>
+    <script src="/static/boot.min.js"></script>
+    <script src="/static/team-spec.js"></script>
+    <!-- end of stuff for testing -->
+{% endif %}
 
 {%endblock%}

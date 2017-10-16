@@ -1,4 +1,4 @@
-from server import app, flow
+from server import app, flow #, JS_TESTING_MODE
 # from oauth2client.client import OAuth2WebServerFlow
 import httplib2
 from apiclient.discovery import build
@@ -15,17 +15,19 @@ import random
 import fitness_helper_functions as fhf
 import dnd_helper_functions as dhf
 
-@app.before_request
-def check_login_time():
-	if request.path not in ('/login', '/logout', '/registration'):
-		if session.get("login_time", None) and session.get("user_id", None):
-			if (datetime.datetime.now() - session.get("login_time")).total_seconds() > 60*60:
-				flash("Your session has timed out, please log in again")
-				del session["user_id"]
-				return redirect("/login")
-		else:
-			flash("Please log in to view this")
-			return redirect("/login")
+# @app.before_request
+# def check_login_time():
+# 	if request.path not in ('/login', '/logout', '/registration'):
+# 		if session.get("login_time", None) and session.get("user_id", None):
+# 			if (datetime.datetime.now() - session.get("login_time")).total_seconds() > 60*60:
+# 				flash("Your session has timed out, please log in again")
+# 				del session["user_id"]
+# 				return redirect("/login")
+# 		else:
+# 			flash("Please log in to view this")
+# 			return redirect("/login")
+# 	g.jasmine_tests = JS_TESTING_MODE
+# 	print "jasmine", g.jasmine_tests
 
 @app.route('/')
 def landing_page():

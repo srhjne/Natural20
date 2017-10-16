@@ -220,6 +220,8 @@ class User(db.Model):
         messages = []
         for update in updates:
             teammate = User.query.get(update.teammate_id)
+            update.resolved = True
+            db.session.commit()
             if teammate:
                 if update.xp_gain > 0:
                     messages.append("You helped %s succeed in their quest! You gain %s XP"%(teammate.username, update.xp_gain))

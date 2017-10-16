@@ -1,2 +1,2 @@
 language: python
-script: pytest flask_tests.py
+script: GGL_ID=test GGL_SECRET=secret pytest flask_tests.py

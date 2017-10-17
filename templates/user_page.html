@@ -64,6 +64,7 @@ at
 </div> 
 <div id="graph-div{{goal.goal_id}}" style="width:600px;height:250px;">
 </div>
+<button id="test_button{{goal.goal_id}}" onClick='facebook_function("current quest is to complete {%if goal.goal_type == 'Sleep'%}{{goal.value/(60.0*60.0)}} hours of{%else%}{{goal.value}}{%endif%} {{goal.goal_type}} {%if goal.frequency == 'Daily'%} per day until {%else%} by {%endif%} {{goal.valid_to.strftime('%I:%M%p %B %d, %Y')}}")' > Share to Facebook </button>
 </div>
 <br>
 {%endfor%}
@@ -80,7 +81,7 @@ You don't currently have any quests.<br>
 </div>
 
 <br>
-<button id="test_button"> do some stuff </button>
+<!-- <button id="test_button" onClick="facebook_function()" > Share to Facebook </button> -->
 
 <!-- <div id="graph-div" style="width:600px;height:250px;">
 </div> -->

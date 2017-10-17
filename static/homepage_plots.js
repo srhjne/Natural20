@@ -19,8 +19,10 @@ $.get("/goal_graph.json", {username: window.location.pathname.slice(6)},function
 					date.push(status_date);
 					value.push(result[prop]["series"][day]["value"]);
 					if ("bedtime" in result[prop]["series"][day]){
-						bedtime.push(result[prop]["series"][day]['bedtime'])
-						waketime.push(result[prop]["series"][day]['waketime'])
+						var bedtime_date = new Date("2017-01-01 "+result[prop]["series"][day]['bedtime']);
+						var waketime_date = new Date("2017-01-01 "+result[prop]["series"][day]['waketime']);
+						bedtime.push(bedtime_date);
+						waketime.push(waketime_date);
 					}
 				}
 		
@@ -42,7 +44,15 @@ $.get("/goal_graph.json", {username: window.location.pathname.slice(6)},function
 					yaxis: 'y2',
 					name: "bedtime"
 				}
-				plot_data = [trace1, trace2]
+				var trace3 = {
+					x: date,
+					y: waketime,
+					type: 'scatter',
+					mode: "lines+markers",
+					yaxis: 'y2',
+					name: "wake up time"
+				}
+				plot_data = [trace1, trace2, trace3]
 			}
 
 			var valid_from_string = result[prop]["valid_from"];
@@ -58,7 +68,9 @@ $.get("/goal_graph.json", {username: window.location.pathname.slice(6)},function
 	  		type: 'date'},
 	  		yaxis: {range: [0, goal_value]},
 	  		yaxis2: {overlaying: 'y',
-    				side: 'right'
+    				side: 'right',
+    				type: 'date',
+    				tickformat: '%H:%M',
   					},
 	  		paper_bgcolor: 'rgba(0,0,0,0)',
 	  		plot_bgcolor: 'rgba(0,0,0,0)',

@@ -3,8 +3,10 @@
 
 
 
-$("#test_button").on("click", function(){
-  var FBDesc      = 'Come see my quests and join me on the adventure!';
+// $("#test_button").on("click", function(){
+
+var facebook_function = function(quest_string) {
+  var FBDesc      = 'My '+quest_string;
   var FBTitle     = 'I am currently battling to complete a quest on Natural 20';
   var FBLink      = 'http://example.com/your-page-link';
   var FBPic       = 'http://example.com/img/your-custom-image.jpg';
@@ -18,4 +20,8 @@ $("#test_button").on("click", function(){
                             'og:description': FBDesc,}})
                             }, function(response){
 		console.log("test")
-	})})
+	})
+}
+// }
+
+  // )

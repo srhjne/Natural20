@@ -4,6 +4,6 @@ createdb testdb
 export GGL_ID=test 
 export GGL_SECRET=secret
 
-coverage run --source=. -m pytest flask_tests.py
+coverage run --source=. --omit=seed.py,google_api_update.py -m pytest flask_tests.py
 
 dropdb testdb

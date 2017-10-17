@@ -1,4 +1,4 @@
-from model import Monster, Attack, LevelLookup, User, UserStatus, Goal, GoalStatus, Friendship, Team, UserTeam
+from model import Monster, Attack, LevelLookup, User, UserStatus, Goal, GoalStatus, Friendship, Team, UserTeam, TeamInvite
 from model import connect_to_db, db
 from server import app
 import datetime
@@ -78,18 +78,9 @@ def make_first_users():
 	valid_to = datetime.datetime.strptime("25-Sep-2017","%d-%b-%Y")
 	value = 15000
 	xp = 300
-	first_goal = Goal(user_id=user_id, goal_type=goal_type,valid_to=valid_to, 
-					  valid_from=valid_from, value=value, xp=xp)
-	db.session.add(first_goal)
-	db.session.commit()
 
-
-	goal_id = Goal.query.filter(Goal.user_id == user_id, Goal.goal_type == "Steps").one().goal_id
 	date_recorded = datetime.datetime.strptime("24-Sep-2017","%d-%b-%Y")
-	value = 1000
-	first_status = GoalStatus(date_recorded=date_recorded, value=value, goal_id=goal_id)
-	db.session.add(first_status)
-	db.session.commit()
+
 
 
 	level=1
@@ -168,8 +159,16 @@ def make_more_users_network():
 		db.session.commit()
 
 
+	user_list = User.query.all()
+	first_user = random.choice(user_list)
+	second_user = User.query.get(1)
+
+	fs = Friendship(user_id_1=first_user.user_id, user_id_2=second_user.user_id, verified=False)
+	db.session.add(fs)
+	db.session.commit()
+
 	for i in range(0,50):
-		user_list = User.query.all()
+		
 		first_user = random.choice(user_list)
 		second_user = random.choice(user_list)
 		if first_user == second_user:
@@ -192,10 +191,17 @@ def make_more_users_network():
 	for i in range(2,34):
 		teams = Team.query.all()
 		team_id = random.choice(teams).team_id
+		valid_from= datetime.datetime.strptime("12-10-2017", "%d-%m-%Y")
 		valid_to= datetime.datetime.strptime("31-12-2999", "%d-%m-%Y")
-		userteam = UserTeam(user_id=i, team_id=team_id, valid_from=datetime.datetime.now(), valid_to=valid_to)
+		userteam = UserTeam(user_id=i, team_id=team_id, valid_from=valid_from, valid_to=valid_to)
 		db.session.add(userteam)
 		db.session.commit()
+
+	examp_userteam = UserTeam.query.first()
+	ti = TeamInvite(inviter_id=examp_userteam.user_id , team_id= examp_userteam.team_id , user_id=1, resolved=False)
+	db.session.add(ti)
+	db.session.commit()
+
 
 if __name__ == "__main__":
     connect_to_db(app)

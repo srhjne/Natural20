@@ -94,11 +94,6 @@ def set_goal(user, goal):
 	db.session.add(goalstatus)
 	db.session.commit()
 
-def check_session():
-	if not session.get("user_id"):
-		flash("You must be logged in to view this")
-		return redirect("/login")
-
 
 
 

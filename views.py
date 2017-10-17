@@ -323,12 +323,10 @@ def update_settings():
 
 @app.route("/enter_sleep")
 def enter_sleep():
-	fhf.check_session()
 	return render_template("enter_sleep.html")
 
 @app.route("/enter_sleep", methods=["POST"])
 def record_sleep():
-	fhf.check_session()
 	bedtime = request.form.get("bedtime")
 	waketime = request.form.get("waketime")
 	user = User.query.get(session["user_id"])

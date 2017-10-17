@@ -88,7 +88,7 @@ class User(db.Model):
         return "<User id=%s, username=%s>" %(self.user_id, self.username)
 
     def get_current_status(self):
-        return self.userstatus[-1]
+        return [userstatus for userstatus in self.userstatus if userstatus.date_recorded <= datetime.datetime.now()][-1]
 
 
     def get_current_goals(self):

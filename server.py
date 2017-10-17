@@ -46,7 +46,7 @@ def check_login_time():
     else:
       flash("Please log in to view this")
       return redirect("/login")
-  g.jasmine_tests = True
+  g.jasmine_tests = False
   
 
                                         
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     connect_to_db(app)
 
     # Use the DebugToolbar
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
 
 
     import sys

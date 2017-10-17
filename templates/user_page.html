@@ -1,6 +1,7 @@
 {%extends "base.html"%}
 {%block title%} Natural 20: Character Sheet {%endblock%}
 {%block content%}
+<script src="/static/facebook.js"></script>
 <div class=container>
 {%if isfriend%}
 <h1 id="welcome"> {{username}}'s profile </h1>
@@ -77,8 +78,9 @@ You don't currently have any quests.<br>
 </div>
 {%endif%}
 </div>
-<br>
 
+<br>
+<button id="test_button"> do some stuff </button>
 
 <!-- <div id="graph-div" style="width:600px;height:250px;">
 </div> -->
@@ -87,5 +89,6 @@ You don't currently have any quests.<br>
 <script src="/static/homepage_plots.js"></script>
 {%if not isfriend%}
 <script type="text/javascript" src="/static/friend_requests.js"></script>
+<script type="text/javascript" src="/static/facebook_post.js"></script>
 {%endif%}
 {%endblock%}

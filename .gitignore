@@ -7,3 +7,4 @@ htmlcov/
 node_modules/
 static/boot.min.js
 static/jasmine*
+libfaketime-0.9.6/

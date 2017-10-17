@@ -37,7 +37,7 @@ JS_TESTING_MODE = False
 
 @app.before_request
 def check_login_time():
-  if request.path not in ('/login', '/logout', '/registration'):
+  if request.path not in ('/login', '/logout', '/registration', '/clock.json'):
     if session.get("login_time", None) and session.get("user_id", None):
       if (datetime.datetime.now() - session.get("login_time")).total_seconds() > 60*60:
         flash("Your session has timed out, please log in again")

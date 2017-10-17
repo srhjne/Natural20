@@ -515,3 +515,7 @@ def make_new_team():
 		team = Team.create_team(teamname=teamname, user_id=user.user_id)
 
 	return jsonify({"teamname": team.teamname})
+
+@app.route("/clock.json")
+def clock():
+	return jsonify(datetime.datetime.strftime(datetime.datetime.now(),"%d %B %Y"))

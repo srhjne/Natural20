@@ -76,8 +76,9 @@
 <br>
 </div>
  <script>
-	var d = new Date();
-	document.getElementById("navbar_date").innerHTML = d.toDateString();
+	$.get("/clock.json",function(result){
+		document.getElementById("navbar_date").innerHTML = result;
+	});
 </script> 
 </body>
 </html>

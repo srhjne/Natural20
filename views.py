@@ -165,19 +165,9 @@ def outcome():
 	return render_template("outcome.html")
 
 
-@app.route('/test')
-def test():
-	auth_uri = flow.step1_get_authorize_url()
-	return redirect(auth_uri)
-
-
 @app.route('/set_goal', methods=['GET'])
 def set_goals():
-	if not session.get('user_id'):
-		flash("You must be logged in to view this")
-		return redirect("/login")
-	else:
-		return render_template("set_goals.html")
+	return render_template("set_goals.html")
 
 
 
@@ -206,36 +196,32 @@ def calc_xp():
 
 @app.route('/set_goal', methods=['POST'])
 def set_goal_db():
-	if not session.get('user_id'):
-		flash("You must be logged in to view this")
-		return redirect("/login")
-	else:
-		user = User.query.get(session.get('user_id'))
-		goal_type = request.form.get("goal_type")
-		goal_value = request.form.get("value")
-		goal_value = int(goal_value)
-		valid_from_u = request.form.get("valid_from")
-		valid_from = datetime.datetime.strptime(valid_from_u, "%Y-%m-%d")
-		valid_to_u = request.form.get("valid_to")
-		valid_to = datetime.datetime.strptime(valid_to_u, "%Y-%m-%d")
-		frequency = request.form.get("frequency")
-		
-		xp = user.calc_xp(goal_value, valid_from, valid_to, goal_type, frequency)
+	user = User.query.get(session.get('user_id'))
+	goal_type = request.form.get("goal_type")
+	goal_value = request.form.get("value")
+	goal_value = int(goal_value)
+	valid_from_u = request.form.get("valid_from")
+	valid_from = datetime.datetime.strptime(valid_from_u, "%Y-%m-%d")
+	valid_to_u = request.form.get("valid_to")
+	valid_to = datetime.datetime.strptime(valid_to_u, "%Y-%m-%d")
+	frequency = request.form.get("frequency")
+	
+	xp = user.calc_xp(goal_value, valid_from, valid_to, goal_type, frequency)
 
-		if goal_type == "Sleep":
-			goal_value = goal_value*60*60
-			
-		goal = Goal(user_id=user.user_id, xp=xp, goal_type=goal_type, value=goal_value, valid_from=valid_from, valid_to=valid_to, frequency=frequency )
-		goal.commit_goal()
-		if goal_type != "Sleep":
-			GoalStatus.make_first_status(goal_type, valid_from, valid_to, goal_value, xp, user.user_id)
-		else:
-			SleepStatus.make_first_sleep_status(valid_from, valid_to, goal_value, xp, user.user_id, frequency)
-		if goal_type in ("Steps", "Calories"):
-			auth_uri = flow.step1_get_authorize_url()
-			return redirect(auth_uri)
-		elif goal_type in ("Sleep"):
-			return redirect("user/%s"%user.username)
+	if goal_type == "Sleep":
+		goal_value = goal_value*60*60
+		
+	goal = Goal(user_id=user.user_id, xp=xp, goal_type=goal_type, value=goal_value, valid_from=valid_from, valid_to=valid_to, frequency=frequency )
+	goal.commit_goal()
+	if goal_type != "Sleep":
+		GoalStatus.make_first_status(goal_type, valid_from, valid_to, goal_value, xp, user.user_id)
+	else:
+		SleepStatus.make_first_sleep_status(valid_from, valid_to, goal_value, xp, user.user_id, frequency)
+	if goal_type in ("Steps", "Calories"):
+		auth_uri = flow.step1_get_authorize_url()
+		return redirect(auth_uri)
+	elif goal_type in ("Sleep"):
+		return redirect("user/%s"%user.username)
 		
 
 @app.route('/login', methods=["POST"])
@@ -306,19 +292,17 @@ def settings():
 
 @app.route("/update_settings.json", methods = ["POST"])
 def update_settings():
-	if session.get("user_id"):
-		user = User.query.get(session["user_id"])
-		email = request.form.get("email", None)
-		password = request.form.get("password", None)
-		old_password = request.form.get("old_password", None)
-		if password and user.password != old_password:
-			return jsonify(None)
-		print email
-		user.update_setting(email=email, password=password)
-		print user.email, user.password
-		return jsonify({"email": user.email, "password": user.password})
-	else:
-		return jsonify(None)	
+	user = User.query.get(session["user_id"])
+	email = request.form.get("email", None)
+	password = request.form.get("password", None)
+	old_password = request.form.get("old_password", None)
+	if password and user.password != old_password:
+		return jsonify(None)
+	print email
+	user.update_setting(email=email, password=password)
+	print user.email, user.password
+	return jsonify({"email": user.email, "password": user.password})
+		
 
 
 @app.route("/enter_sleep")

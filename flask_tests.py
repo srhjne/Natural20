@@ -258,6 +258,18 @@ class UserTest3rdOct(TestCase):
         self.assertIn("Test2_friend", result.data)
         self.assertNotIn("Test_friend", result.data)
 
+    @freeze_time("2017-10-03")
+    def test_goal_graph_json_friend(self):
+        result = self.client.get("/goal_graph.json", query_string={"username":"Test2_friend"})
+        self.assertNotIn("series", result.data)
+
+    @freeze_time("2017-10-03")
+    def test_goal_graph_json_friend(self):
+        result = self.client.get("/goal_graph.json", query_string={"username":None})
+        self.assertIn("series", result.data)
+        self.assertIn("100", result.data)
+        self.assertNotIn("10000", result.data)
+
 
 
 
@@ -383,7 +395,7 @@ def example_data():
     db.session.add(user)
     db.session.commit()
     user = User.query.filter(User.username=="ToK").one()
-    us = UserStatus(user_id=user.user_id, current_xp=20, current_hp=12, level=1, date_recorded=datetime.datetime.now())
+    us = UserStatus(user_id=user.user_id, current_xp=20, current_hp=12, level=1, date_recorded=datetime.datetime.strptime("01-10-2017", "%d-%m-%Y"))
     valid_from = datetime.datetime.strptime("01-10-2017", "%d-%m-%Y")
     print valid_from, type(valid_from)
     valid_to = datetime.datetime.strptime("07-10-2017", "%d-%m-%Y")

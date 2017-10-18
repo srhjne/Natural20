@@ -3,16 +3,16 @@ import time
 from model import GoalStatus, Goal, db, SleepStatus
 from flask import session, redirect
 
-def get_last_week_millis():
-	""" gets the milliseconds from epoch for the last week """
-	day =datetime.datetime.now().day
-	month = datetime.datetime.now().month
-	year = datetime.datetime.now().year
-	datestring = ("%0d %0d %0d")%(day,month, year)
-	struct_time = time.strptime(datestring, "%d %m %Y")
-	millisnow = int(round(time.mktime(struct_time) * 1000))+86400000
-	millislast_week = millisnow - 7*86400000
-	return millisnow, millislast_week
+# def get_last_week_millis():
+# 	""" gets the milliseconds from epoch for the last week """
+# 	day =datetime.datetime.now().day
+# 	month = datetime.datetime.now().month
+# 	year = datetime.datetime.now().year
+# 	datestring = ("%0d %0d %0d")%(day,month, year)
+# 	struct_time = time.strptime(datestring, "%d %m %Y")
+# 	millisnow = int(round(time.mktime(struct_time) * 1000))+86400000
+# 	millislast_week = millisnow - 7*86400000
+# 	return millisnow, millislast_week
 
 
 def get_millis_date(datetime1):
@@ -86,13 +86,16 @@ def update_goal_status(user, service):
 						db.session.commit()
 
 
-def set_goal(user, goal):
-	db.session.add(goal)
-	db.session.commit()
-	goal_db = Goal.query.filter(Goal.user_id==user.user_id, Goal.xp==xp, Goal.goal_type==goal_type, Goal.value==goal_value, Goal.valid_from==valid_from, Goal.valid_to==valid_to).first()
-	goalstatus = GoalStatus(goal_id=goal_db.goal_id,value=0,date_recorded=goal.valid_from)
-	db.session.add(goalstatus)
-	db.session.commit()
+# def set_goal(user, goal):
+# 	db.session.add(goal)
+# 	db.session.commit()
+# 	goal_db = Goal.query.filter(Goal.user_id==user.user_id, Goal.xp==xp, Goal.goal_type==goal_type, Goal.value==goal_value, Goal.valid_from==valid_from, Goal.valid_to==valid_to).first()
+# 	goalstatus = GoalStatus(goal_id=goal_db.goal_id,value=0,date_recorded=goal.valid_from)
+# 	db.session.add(goalstatus)
+# 	db.session.commit()
+
+
+	
 
 
 

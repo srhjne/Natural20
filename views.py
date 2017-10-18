@@ -15,6 +15,8 @@ import random
 import fitness_helper_functions as fhf
 import dnd_helper_functions as dhf
 
+import bcrypt
+
 # @app.before_request
 # def check_login_time():
 # 	if request.path not in ('/login', '/logout', '/registration'):
@@ -232,7 +234,7 @@ def login_post():
 	users = User.query.filter(User.username == username).all()
 	if users:
 		user = users[0]
-		if user.password == password:
+		if bcrypt.hashpw(password.encode('utf8'), user.password.encode('utf8')) == user.password:
 			messages = user.get_team_messages()
 			for message in messages:
 				flash(message)
@@ -296,10 +298,10 @@ def update_settings():
 	email = request.form.get("email", None)
 	password = request.form.get("password", None)
 	old_password = request.form.get("old_password", None)
-	if password and user.password != old_password:
+	if password and bcrypt.hashpw(old_password.encode('utf8'),user.password.encode('utf8')) != user.password:
 		return jsonify(None)
 	print email
-	user.update_setting(email=email, password=password)
+	user.update_setting(email=email, password=str(password))
 	print user.email, user.password
 	return jsonify({"email": user.email, "password": user.password})
 		

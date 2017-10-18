@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 import random
+import bcrypt
 
 
 
@@ -80,7 +81,7 @@ class User(db.Model):
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     username = db.Column(db.String(12), nullable=False)
     email = db.Column(db.String(100), nullable=False)
-    password = db.Column(db.String(32), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
 
 
 
@@ -135,7 +136,8 @@ class User(db.Model):
 
     @classmethod
     def make_new_user(cls, username, email, password):
-        user = cls(username=username, email=email, password=password)
+        hashed_password = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(10))
+        user = cls(username=username, email=email, password=hashed_password)
         db.session.add(user)
         db.session.commit()
         user_db = cls.query.filter(cls.username==username).first()
@@ -152,7 +154,8 @@ class User(db.Model):
 
     def update_setting(self, password=False, email=False):
         if password:
-            self.password = password
+            hashed_password = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(10))
+            self.password = hashed_password
         if email:
             self.email = email
         db.session.commit()

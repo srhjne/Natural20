@@ -3,6 +3,7 @@ from model import connect_to_db, db
 from server import app
 import datetime
 import random
+import bcrypt
 
 
 
@@ -68,7 +69,8 @@ def make_first_users():
 	username = "ToK"
 	email = "sarahjaneiom@gmail.com"
 	password = "1234"
-	first_user = User(username=username, email=email, password=password)
+	hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(10))
+	first_user = User(username=username, email=email, password=hashed_password)
 	db.session.add(first_user)
 	db.session.commit()
 
@@ -94,7 +96,8 @@ def make_first_users():
 	username = "Gundren"
 	email = "gundren@rockseeker.com"
 	password = "1111"
-	second_user = User(username=username, email=email, password=password)
+	hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(10))
+	second_user = User(username=username, email=email, password=hashed_password)
 	db.session.add(second_user)
 	db.session.commit()
 
@@ -136,7 +139,8 @@ def make_more_users_network():
 		
 		email = username+"@"+username+".com"
 		password = "password"
-		user = User(username=username, email=email, password=password)
+		hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(10))
+		user = User(username=username, email=email, password=hashed_password)
 		db.session.add(user)
 		db.session.commit()
 		user_id = User.query.filter(User.email == email).one().user_id

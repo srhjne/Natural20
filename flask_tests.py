@@ -1,6 +1,6 @@
 from unittest import TestCase
 from server import app
-from model import db, connect_to_db, User, UserStatus, LevelLookup, Goal, GoalStatus, Monster, Attack, SleepStatus, Friendship, Team, TeamInvite
+from model import db, connect_to_db, User, UserStatus, LevelLookup, Goal, GoalStatus, Monster, Attack, SleepStatus, Friendship, Team, TeamInvite, UserTeam
 import server
 import datetime
 from selenium import webdriver
@@ -141,6 +141,9 @@ class UserTest3rdOct(TestCase):
         result = self.client.get("/outcome.json")
         self.assertIn("monster", result.data)
         self.assertIn("attack", result.data)
+        result = self.client.get("/user/Test2_friend")
+        self.assertIn("11", result.data)
+        self.assertNotIn("HP: 12", result.data)
 
     @freeze_time("2017-10-03")
     def test_settings_page(self):
@@ -314,11 +317,11 @@ class UserTest4thOct(TestCase):
     def test_join_team_json(self):
         result = self.client.post("/join_team.json", data={"invite_id":1, "teamname":"test_team2"})
         self.assertIn("test_team2", result.data)
-        # result = self.client.get("/get_team.json",query_string={"teamname":"test_team"})
-        # self.assertNotIn("ToK", result.data)
-        # result = self.client.get("/get_team_requests.json")
-        # self.assertNotIn("Test_friend", result.data)
-        # self.assertNotIn("test_team2", result.data)
+        result = self.client.get("/get_team.json",query_string={"teamname":"test_team"})
+        self.assertNotIn("ToK", result.data)
+        result = self.client.get("/get_team_requests.json")
+        self.assertNotIn("Test_friend", result.data)
+        self.assertNotIn("test_team2", result.data)
 
 
     @freeze_time("2017-10-04")
@@ -446,6 +449,9 @@ def example_data():
     db.session.commit()
 
     team = Team.create_team("test_team", 1)
+    userteam = UserTeam(user_id=user3.user_id, team_id=1,valid_from=valid_from, valid_to=valid_to)
+    db.session.add(userteam)
+    db.session.commit()
     team2 = Team.create_team("test_team2", 2)
 
     print "TEAM STUFF USER 1", user.userteam[0].valid_from, user.userteam[0].valid_to

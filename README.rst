@@ -81,3 +81,13 @@ The user page is here:
     User profile page
 
 
+.. figure:: outcome_page_image.png
+    :width: 200px
+    :align: center
+    :height: 100px
+    :alt: alternate text
+    :figclass: align-center
+
+    Goal outcome page
+
+

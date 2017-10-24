@@ -69,4 +69,15 @@ Website
 ----------------
 Here is a brief tour of the website
 
+The user page is here:
+
+.. figure:: user_page_image.png
+    :width: 200px
+    :align: center
+    :height: 100px
+    :alt: alternate text
+    :figclass: align-center
+
+    User profile page
+
 

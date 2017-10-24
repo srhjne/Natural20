@@ -33,6 +33,15 @@ You can then seed this database by running:
 
 	python seed.py
 
+In order to run the server you need to obtain a Google API Client Key and Secret and load them into environment variables:
+::
+
+	export GGL_ID="YOUR_ID"
+
+	export GGL_SECRET="YOUR_SECRET" 
+
+
+
 You are then all set to run the server:
 ::
 

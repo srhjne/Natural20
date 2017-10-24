@@ -44,9 +44,15 @@ Database
 
 The database used for this project is in PostgreSQL
 
-A schematic of this is shown below:
 
+.. figure:: DB_schema.jpeg
+    :width: 200px
+    :align: center
+    :height: 100px
+    :alt: alternate text
+    :figclass: align-center
 
+    Schematic of the tables in the database
 
 
 

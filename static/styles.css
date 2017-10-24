@@ -74,8 +74,48 @@ table#user_list, #user_list th, #user_list td {
 }
 }
 
-.submit-button:hover {
+.leaderboard-element:hover {
+	color: #642205 ;
+	background-color:#EDEEC0;
+
+}
+
+.submit-button:visited {
+	color: #642205 ;
+	background-color:#EDEEC0;
+
+}
+
+.submit-button:active {
+	color: #642205 ;
+	background-color:#EDEEC0;
+
+}
+
+.submit-button:focus {
 	color: #EDEEC0;
+	background-color: #642205 ;
+	
+
+}
+
+.btn-primary:hover {
+    color: #EDEEC0;
+    background-color: #642205;
+    border-color: #642205;
+}
+
+
+
+.btn-default:hover {
+    color: #EDEEC0;
+    background-color: #642205;
+    border-color: #642205;
+}
+
+.submit-button:hover, {
+	color: #EDEEC0;
+	background-color: #642205;
 }
 
 

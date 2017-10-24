@@ -31,7 +31,8 @@ $.get("/goal_graph.json", {username: window.location.pathname.slice(6)},function
   			y: value,
   			width: 1000*60*60*23,
   			type: 'bar',
-  			name: 'goal progress'
+  			name: 'goal progress',
+  			marker: {color:'rgb(100,34,5)'}
 			};
 			var plot_data = [trace1]
 			var valid_from_string = result[prop]["valid_from"];
@@ -118,7 +119,8 @@ $.get("/goal_graph.json", {username: window.location.pathname.slice(6)},function
 	  			y: value,
 	  			type: 'scatter',
 	  			mode: 'lines',
-	  			name: 'goal progress'
+	  			name: 'goal progress',
+	  			marker: {color:'rgb(100,34,5)'}
 				};
 				var valid_from_string = result[prop]["valid_from"];
 			var valid_from = new Date(valid_from_string);
@@ -139,7 +141,8 @@ $.get("/goal_graph.json", {username: window.location.pathname.slice(6)},function
 	    	t: 50,
 	    	pad: 10
 	  		}, 
-	  		title: false
+	  		title: false,
+
 			};
 
 			Plotly.newPlot('graph-div'+prop, [trace1], layout);

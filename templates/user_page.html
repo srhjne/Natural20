@@ -58,14 +58,14 @@ at
 {{value}} {{goal.goal_type}} as of {{date}}
  <div class="progress" id={{goal.goal_id}}>
   <div class="progress-bar" role="progressbar" aria-valuenow={{value}}
-  aria-valuemin="0" aria-valuemax={{goal.value}} style="width:{{ratio}}%">
+  aria-valuemin="0" aria-valuemax={{goal.value}} style="background-color: #642205;width:{{ratio}}%">
     <span class="sr-only"> {{ratio}}% complete </span>
   </div>
 </div> 
 <div id="graph-div{{goal.goal_id}}" style="width:600px;height:250px;">
 </div>
 {%if not isfriend%}
-<button class="submit-button" id="test_button{{goal.goal_id}}" onClick='facebook_function("current quest is to complete {%if goal.goal_type == 'Sleep'%}{{goal.value/(60.0*60.0)}} hours of{%else%}{{goal.value}}{%endif%} {{goal.goal_type}} {%if goal.frequency == 'Daily'%} per day until {%else%} by {%endif%} {{goal.valid_to.strftime('%I:%M%p %B %d, %Y')}}")' > Share to Facebook </button>
+<button class="facebook-button submit-button" id="test_button{{goal.goal_id}}" onClick='facebook_function("current quest is to complete {%if goal.goal_type == 'Sleep'%}{{goal.value/(60.0*60.0)}} hours of{%else%}{{goal.value}}{%endif%} {{goal.goal_type}} {%if goal.frequency == 'Daily'%} per day until {%else%} by {%endif%} {{goal.valid_to.strftime('%I:%M%p %B %d, %Y')}}")' > Share to Facebook </button>
 {%endif%}
 </div>
 <br>

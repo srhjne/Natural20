@@ -50,9 +50,10 @@ def main():
 connect_to_db(app)
 db.create_all()
 while True:
-	time.sleep(20*60)
-	try:
-		main()
-	except Exception:
-		print "Error", datetime.datetime.now()
-		continue
+	main()
+	# time.sleep(60)
+	# try:
+	# 	main()
+	# except Exception:
+	# 	print "Error", datetime.datetime.now()
+	# 	continue

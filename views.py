@@ -4,7 +4,7 @@ import httplib2
 from apiclient.discovery import build
 from oauth2client.file import Storage
 
-from flask import jsonify, render_template, redirect, request, flash, session
+from flask import jsonify, render_template, redirect, request, flash, session, g
 
 from model import db, User, Goal, GoalStatus, UserStatus, Monster, Attack, LevelLookup, SleepStatus, Friendship, Team, UserTeam, TeamInvite
 
@@ -17,19 +17,19 @@ import dnd_helper_functions as dhf
 
 import bcrypt
 
-# @app.before_request
-# def check_login_time():
-# 	if request.path not in ('/login', '/logout', '/registration'):
-# 		if session.get("login_time", None) and session.get("user_id", None):
-# 			if (datetime.datetime.now() - session.get("login_time")).total_seconds() > 60*60:
-# 				flash("Your session has timed out, please log in again")
-# 				del session["user_id"]
-# 				return redirect("/login")
-# 		else:
-# 			flash("Please log in to view this")
-# 			return redirect("/login")
-# 	g.jasmine_tests = JS_TESTING_MODE
-# 	print "jasmine", g.jasmine_tests
+@app.before_request
+def check_login_time():
+	if request.path not in ('/login', '/logout', '/registration','/clock.json','/static/styles.css', '/static/DUNGRG__.TTF', '/static/d20-navbar.png'):
+		if session.get("login_time", None) and session.get("user_id", None):
+			if (datetime.datetime.now() - session.get("login_time")).total_seconds() > 60*60:
+				flash("Your session has timed out, please log in again")
+				del session["user_id"]
+				return redirect("/login")
+		else:
+			flash("Please log in to view this")
+			return redirect("/login")
+	g.jasmine_tests = False
+	print "jasmine", g.jasmine_tests
 
 @app.route('/')
 def landing_page():
@@ -71,15 +71,15 @@ def profile_page(username):
 					mean_value = goal.get_mean_value_daily()
 					progress = goal.get_current_status()
 					if goal.goal_type == "Sleep":
-						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), round(mean_value/(60.0*60),2), 100.0*progress.value/goal.value, goal])
+						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), round(mean_value/(60.0*60),2), min(100.0*mean_value/goal.value,100), goal])
 					else:
-						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), round(mean_value,2), 100.0*progress.value/goal.value, goal])
+						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), round(mean_value,2), min(100.0*mean_value/goal.value,100), goal])
 				else:
 					progress = goal.get_current_status()
 					if goal.goal_type == "Sleep":
-						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), progress.value/(60.0*60), 100.0*progress.value/goal.value, goal])
+						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), progress.value/(60.0*60), min(100.0*progress.value/goal.value,100), goal])
 					else:
-						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), progress.value, 100.0*progress.value/goal.value, goal])
+						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), progress.value, min(100.0*progress.value/goal.value,100), goal])
 
 
 			return render_template("user_page.html", username=username,  
@@ -158,6 +158,7 @@ def auth_ret():
 def outcome_json():
 	user = User.query.get(int(session.get("user_id")))
 	goal_list = dhf.get_outcome_dict(user)
+	print goal_list
 	return jsonify(goal_list)
 
 

@@ -4,14 +4,15 @@
 
 
 {%block content%}
+<div class="container-fluid">
 <form id = "search_users">
 Username <input type="text" name="username" id="username">
-<input type="submit" value="Search users">
+<input class="submit-button" type="submit" value="Search users">
 </form>
-<ul id="user_list">
+<table id="user_list">
 
-</ul>
-
+</table>
+</div>
 
 <script src="/static/search_users.js"></script>
 {%endblock%}

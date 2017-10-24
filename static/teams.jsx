@@ -42,8 +42,9 @@ class ContentBox extends React.Component {
     	if (retVal == true){
 			$.post("/leave_team.json",{teamname: teamname},function(result){
 				if (result){
-					this.setState({teamname:""})
+					this.setState({teamname:"",teamname_view:""})
 					this.getTeam(this.state.teamname)
+					this.getLeaderboard()
 				}
 				console.log("This is leave team")
 				console.log(result);
@@ -70,6 +71,8 @@ class ContentBox extends React.Component {
 	   			if (this.state.teamname === teamname) {
 	   				this.setState({teamname: result[0]});
 	   			}
+   			} else {
+   				this.setState({team_members:[]});
    			}
 
    		}.bind(this));
@@ -104,6 +107,7 @@ class ContentBox extends React.Component {
 					this.setState({teamname:result.teamname});
 					this.getTeam(this.state.teamname);
 					this.getTeamRequests();
+					this.getLeaderboard();
 				} 
 
 			}.bind(this));
@@ -186,7 +190,7 @@ class NewTeam extends React.Component {
 			</tr>
 			<tr>
 			<td>
-			<button onClick={this.props.createTeam} > Create Team </button>
+			<button className="submit-button" onClick={this.props.createTeam} > Create Team </button>
 			</td>
 			</tr>
 			</table>
@@ -214,7 +218,7 @@ class TeamRequest extends React.Component {
 			<br/>
 			<br/>
 			{this.props.team_request.inviter_name} wants you to join the {this.props.team_request.teamname} Guild
-			<button className="btn btn-default" onClick={this.props.joinTeam}>Join team </button>
+			<button className="submit-button btn btn-default" onClick={this.props.joinTeam}>Join team </button>
 			</div>
 			)
 		
@@ -404,11 +408,11 @@ class TeamJoin extends React.Component {
 			return (
 				<div>
 				<h1> {this.props.teamname_view} </h1>
-				<div className="btn btn-default" onClick={this.props.leaveTeam}>
+				<div className="btn btn-default submit-button" onClick={this.props.leaveTeam}>
 					Leave Team
 				</div>
 				
-				<a href="#myModal" role="button" className="btn btn-large btn-primary" data-toggle="modal">Invite Friends</a>
+				<a href="#myModal" role="button" className="btn btn-large btn-primary submit-button" data-toggle="modal">Invite Friends</a>
 				<div id="myModal" className="modal fade">
 
     			<div className="modal-dialog">
@@ -426,7 +430,7 @@ class TeamJoin extends React.Component {
 				            <div  className="modal-body">
 
 				            {this.props.friends.map( function(friendname){
-				            	return <button type="button" className="btn btn-primary" onClick={this.inviteFriend.bind(this,friendname)}>{friendname}</button>
+				            	return <button type="button" className="btn btn-primary submit-button" onClick={this.inviteFriend.bind(this,friendname)}>{friendname}</button>
 				            }.bind(this))
 				        	}
 				            	

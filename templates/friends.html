@@ -11,7 +11,7 @@ Natural 20: Friends
 <h1> Friends </h1>
 <ul>
 {%for friend, friendship in friends%}
-<li> <a href="/user/{{friend.username}}"> {{friend.username}} </a>
+<li class="friend-list"> <a class="submit-button" href="/user/{{friend.username}}"> {{friend.username}} </a>
 </li>
 
 {%endfor%}

@@ -65,7 +65,7 @@ at
 <div id="graph-div{{goal.goal_id}}" style="width:600px;height:250px;">
 </div>
 {%if not isfriend%}
-<button id="test_button{{goal.goal_id}}" onClick='facebook_function("current quest is to complete {%if goal.goal_type == 'Sleep'%}{{goal.value/(60.0*60.0)}} hours of{%else%}{{goal.value}}{%endif%} {{goal.goal_type}} {%if goal.frequency == 'Daily'%} per day until {%else%} by {%endif%} {{goal.valid_to.strftime('%I:%M%p %B %d, %Y')}}")' > Share to Facebook </button>
+<button class="submit-button" id="test_button{{goal.goal_id}}" onClick='facebook_function("current quest is to complete {%if goal.goal_type == 'Sleep'%}{{goal.value/(60.0*60.0)}} hours of{%else%}{{goal.value}}{%endif%} {{goal.goal_type}} {%if goal.frequency == 'Daily'%} per day until {%else%} by {%endif%} {{goal.valid_to.strftime('%I:%M%p %B %d, %Y')}}")' > Share to Facebook </button>
 {%endif%}
 </div>
 <br>
@@ -76,7 +76,7 @@ at
 {{username}} doesn't currently have any goals
 {%else%}
 You don't currently have any quests.<br>
-<a href="/set_goal"> Set a new Goal </a>
+<a class="submit-button" href="/set_goal"> Set a new Goal </a>
 {%endif%}
 </div>
 {%endif%}

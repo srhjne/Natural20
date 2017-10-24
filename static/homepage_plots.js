@@ -34,6 +34,30 @@ $.get("/goal_graph.json", {username: window.location.pathname.slice(6)},function
   			name: 'goal progress'
 			};
 			var plot_data = [trace1]
+			var valid_from_string = result[prop]["valid_from"];
+			var valid_from = new Date(valid_from_string);
+			var valid_to_string = result[prop]["valid_to"];
+			var valid_to = new Date(valid_to_string);
+			var goal_value = result[prop]["value"];
+			// data.push(trace1)
+			console.log(valid_from_string);
+			console.log(valid_to_string);
+			var layout = {
+			xaxis: {range: [valid_from_string, valid_to_string],
+	  		type: 'date'},
+	  		yaxis: {range: [0, goal_value]},
+	  		
+	  		paper_bgcolor: 'rgba(0,0,0,0)',
+	  		plot_bgcolor: 'rgba(0,0,0,0)',
+	  		margin: {
+	    	l: 50,
+	    	r: 50,
+	    	b: 50,
+	    	t: 50,
+	    	pad: 10
+	  		}, 
+	  		title: false
+			};
 
 			if (bedtime.length > 0 ){
 				var trace2 = {
@@ -53,17 +77,7 @@ $.get("/goal_graph.json", {username: window.location.pathname.slice(6)},function
 					name: "wake up time"
 				}
 				plot_data = [trace1, trace2, trace3]
-			}
-
-			var valid_from_string = result[prop]["valid_from"];
-			var valid_from = new Date(valid_from_string);
-			var valid_to_string = result[prop]["valid_to"];
-			var valid_to = new Date(valid_to_string);
-			var goal_value = result[prop]["value"];
-			// data.push(trace1)
-			console.log(valid_from_string);
-			console.log(valid_to_string);
-			var layout = {
+				var layout = {
 			xaxis: {range: [valid_from_string, valid_to_string],
 	  		type: 'date'},
 	  		yaxis: {range: [0, goal_value]},
@@ -83,6 +97,10 @@ $.get("/goal_graph.json", {username: window.location.pathname.slice(6)},function
 	  		}, 
 	  		title: false
 			};
+			}
+
+			
+			
 
 			Plotly.newPlot('graph-div'+prop, plot_data, layout);
 			} else {

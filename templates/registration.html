@@ -10,13 +10,25 @@
 </div>
 {%endfor%}
 <form action="/registration" method="POST">
-Username <input type="text" name="username"> <br>
-Email <input type="text" name="email"> <br>
+<table>
+<tr>
+<td>
+Username</td><td> <input type="text" name="username"> <br> </td></tr>
+<tr>
+<td>Email </td><td><input type="text" name="email"> <br></td></tr>
+<tr>
+<td>
+Password </td><td><input type="password" name="password"> <br></td></tr>
+<tr>
+<td>
+Confirm password </td><td><input type="password" name="confirm_password"> <br></td></tr>
+<tr>
+<td>
+</td>
+<td>
 
-Password <input type="password" name="password"> <br>
-Confirm password <input type="password" name="confirm_password"> <br>
-
-<input type="submit" value="Begin your campaign">
+<input class="submit-button" type="submit" value="Begin your campaign"></td></tr>
+</table>
 </form>
 
 </div>

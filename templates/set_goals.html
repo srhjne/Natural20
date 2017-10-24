@@ -8,28 +8,39 @@
 {{message}}
 {%endfor%}
 <form action="/set_goal" method="POST">
+<table>
+<tr>
+<td>
 Quest type: 
+</td>
+<td>
 <select id="goal_type" name="goal_type">
 <option value="Steps">Steps</option>
 <option value="Calories">Calories</option>
 <option value="Sleep"> Sleep</option>
 </select>
-<br> <br>
-Goal value: <input id="value" type="number" name="value"> 
+</td></tr><tr>
+<td>
+Goal value:
+</td><td>
+ <input id="value" type="number" name="value"> 
+ </td><td>
 <select id="frequency" name="frequency">
 	<option value="Daily"> Daily </option>
 	<option value="Total"> Total </option>
 </select>
-<br>
-Start Date (optional): <input id="valid_from" type="date" name="valid_from"> <br>
-<br>
-End Date: <input id="valid_to" type="date" name="valid_to"> <br>
-<br>
-
-<input type="submit" value="Start Quest!">
+</td></tr><tr><td>
+Start Date (optional):</td><td> <input id="valid_from" type="date" name="valid_from"> 
+</td></tr><tr><td>
+End Date:</td><td> <input id="valid_to" type="date" name="valid_to"> <br>
+</td></tr>
+<tr><td>
+<input class="submit-button" type="submit" value="Start Quest!">
+</td></tr>
+</table>
 </form>
 <br>
-<button id="calc_xp"> Calculate XP </button>
+<button class="submit-button" id="calc_xp"> Calculate XP </button>
 <div id="show_xp">
 </div>
 

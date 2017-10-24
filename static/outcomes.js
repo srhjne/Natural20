@@ -19,7 +19,7 @@ $("#make-stuff-happen").on('click', function () {
 		$("#make-stuff-happen").off();
 		$("#go-back").append(
 			// "<form action='/user/"+result[0].username+"'><input type='submit' value='Continue on your campaign'></form>"
-			"<a class='btn' href='/user/"+result[0].username+"'>Continue with campaign</a>"
+			"<a class='submit-button regular-text' href='/user/"+result[0].username+"'>Continue with campaign</a>"
 			);
 	});
 });

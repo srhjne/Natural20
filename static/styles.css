@@ -10,22 +10,96 @@ h1 {
 
 .navbar-default .navbar-brand {
 	font-family: dungeonsFont;
-	font-size:30px;
+	font-size:40px;
 	color: #baa975;
+}
+
+.navbar-default .navbar-brand:hover, .navbar-brand:visited {
+	color: #EDEEC0;
 }
 
 .navbar.navbar-default {
 	background-color:   #642205;
 	color: #baa975;
 	border-color:  #642205
+	height: 70px;
 ;
+}
+
+.navbar-default .navbar-toggle:focus, .navbar-default .navbar-toggle:hover {
+    background-color: #EDEEC0;
+}
+
+.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:focus, .navbar-default .navbar-nav>.open>a:hover {
+    color: #642205;
+    background-color: #baa975;
+}
+
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+	border-color: black;
+
+}
+
+table#user_list, #user_list th, #user_list td {
+    border: 3px solid black;
+}
+
+#user_list td {
+    padding:10px;
+}
+
+.dropdown-menu>li>a {
+	font-size: 20px
+	}
+
+.dropdown-menu>li>a:hover {
+	background-color: #642205 ;
+	}
+
+.friend-request-button {
+	display: inline;
 }
 
 .navbar.navbar-default li a {
 	color: #baa975;
 }
 
+@media (max-width: 767px) {
+	.navbar-default .navbar-nav .open .dropdown-menu>li>a {
+    color: #baa975 ;
+}
 
+    .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover {
+    color: #EDEEC0;
+}
+}
+
+.submit-button:hover {
+	color: #EDEEC0;
+}
+
+
+.regular-text {
+	font-size: 30px;
+}
+
+.navbar.navbar-default li a:hover{
+	color: #EDEEC0;
+}
+
+
+.navbar.navbar-default li a:focus{
+	color: #EDEEC0;
+}
+
+.navbar.navbar-default li a:active{
+	color: #EDEEC0;
+}
+
+
+.navbar.navbar-default li a:visited{
+	color:  #baa975;
+}
 
 #goal_stats .figures_div {
 	border: solid 3px black;
@@ -88,6 +162,21 @@ div.alert {
 	font-size: 30px;
 	margin-left: auto;
 	margin-right: auto;
+	background-color:   #642205;
+	color: #baa975;
+}
+
+input {
+	border: solid 2px black;
+	border-radius: 3px;
+}
+
+.submit-button {
+	border: solid 2px black;
+	border-radius: 3px;
+	background-color:   #642205;
+	color: #baa975;
+	padding: 3px;
 }
 
 
@@ -110,4 +199,25 @@ div.new-team-div {
 
 div.new-team-div h1{
 	font-size: 50px;
+}
+
+#d20-navbar {
+	display: inline;
+	width: 30px;
+	height: 30px;
+	margin-top:-9px;
+	
+}
+
+a:hover {
+	color: #EDEEC0;
+}
+
+.friend-list{
+	line-height: 1.8;
+}
+
+select {
+	background-color: #baa975;
+	border-radius: 3px ;
 }

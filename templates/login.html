@@ -3,22 +3,25 @@
 {%block title%} Natural 20 Login {%endblock%}
 
 {%block content%}
-<div class="container">
-{% for message in get_flashed_messages()%}
-{%if message == "Thanks for registering!"%}
-<div class="alert alert-success" role="alert">
-{%else%}
-<div class="alert alert-danger" role="alert">
-{%endif%}
-{{message}}
-</div>
-{%endfor%}
-<form action="/login" method="POST" id="login-form">
-Username <input id="username" type="text" name="username"> <br>
-<br>
-Password <input id="password" type="password" name="password"> <br>
-<input id="submit" type="submit" value="Login">
-</form>
+<div class="container-fluid">
+	{% for message in get_flashed_messages()%}
+		{%if message == "Thanks for registering!"%}
+			<div class="alert alert-success" role="alert">
+			{{message}}
+			</div>
+		{%else%}
+			<div class="alert alert-danger" role="alert">
+			{{message}}
+			</div>
+		{%endif%}
+		
+	{%endfor%}
+	<form action="/login" method="POST" id="login-form">
+	Username <input id="username" type="text" name="username"><br>
+	<br>
+	Password <input id="password" type="password" name="password"> <br>
+	<input class="submit-button" id="submit" type="submit" value="Login">
+	</form>
 
 </div>
 

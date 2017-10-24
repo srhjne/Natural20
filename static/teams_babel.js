@@ -57,8 +57,9 @@ var ContentBox = function (_React$Component) {
 			if (retVal == true) {
 				$.post("/leave_team.json", { teamname: teamname }, function (result) {
 					if (result) {
-						this.setState({ teamname: "" });
+						this.setState({ teamname: "", teamname_view: "" });
 						this.getTeam(this.state.teamname);
+						this.getLeaderboard();
 					}
 					console.log("This is leave team");
 					console.log(result);
@@ -84,6 +85,8 @@ var ContentBox = function (_React$Component) {
 					if (this.state.teamname === teamname) {
 						this.setState({ teamname: result[0] });
 					}
+				} else {
+					this.setState({ team_members: [] });
 				}
 			}.bind(this));
 		}
@@ -120,6 +123,7 @@ var ContentBox = function (_React$Component) {
 						this.setState({ teamname: result.teamname });
 						this.getTeam(this.state.teamname);
 						this.getTeamRequests();
+						this.getLeaderboard();
 					}
 				}.bind(this));
 			}
@@ -242,7 +246,7 @@ var NewTeam = function (_React$Component2) {
 							null,
 							React.createElement(
 								"button",
-								{ onClick: this.props.createTeam },
+								{ className: "submit-button", onClick: this.props.createTeam },
 								" Create Team "
 							)
 						)
@@ -284,7 +288,7 @@ var TeamRequest = function (_React$Component3) {
 				" Guild",
 				React.createElement(
 					"button",
-					{ className: "btn btn-default", onClick: this.props.joinTeam },
+					{ className: "submit-button btn btn-default", onClick: this.props.joinTeam },
 					"Join team "
 				)
 			);
@@ -580,12 +584,12 @@ var TeamJoin = function (_React$Component9) {
 					),
 					React.createElement(
 						"div",
-						{ className: "btn btn-default", onClick: this.props.leaveTeam },
+						{ className: "btn btn-default submit-button", onClick: this.props.leaveTeam },
 						"Leave Team"
 					),
 					React.createElement(
 						"a",
-						{ href: "#myModal", role: "button", className: "btn btn-large btn-primary", "data-toggle": "modal" },
+						{ href: "#myModal", role: "button", className: "btn btn-large btn-primary submit-button", "data-toggle": "modal" },
 						"Invite Friends"
 					),
 					React.createElement(
@@ -617,7 +621,7 @@ var TeamJoin = function (_React$Component9) {
 									this.props.friends.map(function (friendname) {
 										return React.createElement(
 											"button",
-											{ type: "button", className: "btn btn-primary", onClick: this.inviteFriend.bind(this, friendname) },
+											{ type: "button", className: "btn btn-primary submit-button", onClick: this.inviteFriend.bind(this, friendname) },
 											friendname
 										);
 									}.bind(this)),

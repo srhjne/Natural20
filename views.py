@@ -158,10 +158,10 @@ def auth_ret():
 		flash("You will only be able to track Sleep goals")
 		user = User.query.get(int(session.get("user_id")))
 		if user.get_unresolved_overdue_goals():
-				print "Unresolved goals", user.get_unresolved_overdue_goals()
-				return redirect("/outcome")
-			else:			
-				return redirect("/user/%s" % user.username)
+			print "Unresolved goals", user.get_unresolved_overdue_goals()
+			return redirect("/outcome")
+		else:			
+			return redirect("/user/%s" % user.username)
 
 
 @app.route('/outcome.json')

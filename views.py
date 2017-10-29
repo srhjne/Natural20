@@ -132,26 +132,36 @@ def login():
 @app.route('/auth_return/', methods=["GET"])
 def auth_ret():
 	code = request.args.get("code")
-	credentials = flow.step2_exchange(code)
-	storage = Storage('credentials%s.dat' % (session.get("user_id")))
-	storage.put(credentials)
+	if code:
+		credentials = flow.step2_exchange(code)
+		storage = Storage('credentials%s.dat' % (session.get("user_id")))
+		storage.put(credentials)
 
-	http = httplib2.Http()
-	http = credentials.authorize(http)
-	service = build('fitness', 'v1', http=http)
+		http = httplib2.Http()
+		http = credentials.authorize(http)
+		service = build('fitness', 'v1', http=http)
 
-	if session.get("user_id"):
-		user = User.query.get(int(session.get("user_id")))
-		
-		fhf.update_goal_status(user, service)
-		if user.get_unresolved_overdue_goals():
-			print "Unresolved goals", user.get_unresolved_overdue_goals()
-			return redirect("/outcome")
-		else:			
-			return redirect("/user/%s" % user.username)
+		if session.get("user_id"):
+			user = User.query.get(int(session.get("user_id")))
+			
+			fhf.update_goal_status(user, service)
+			if user.get_unresolved_overdue_goals():
+				print "Unresolved goals", user.get_unresolved_overdue_goals()
+				return redirect("/outcome")
+			else:			
+				return redirect("/user/%s" % user.username)
+		else:
+			flash("You need to log in")
+			return redirect("/login")
 	else:
-		flash("You need to log in")
-		return redirect("/login")
+		flash("You need to allow access to Google Fit to access all the features")
+		flash("You will only be able to track Sleep goals")
+		user = User.query.get(int(session.get("user_id")))
+		if user.get_unresolved_overdue_goals():
+				print "Unresolved goals", user.get_unresolved_overdue_goals()
+				return redirect("/outcome")
+			else:			
+				return redirect("/user/%s" % user.username)
 
 
 @app.route('/outcome.json')

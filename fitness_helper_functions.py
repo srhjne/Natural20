@@ -60,6 +60,7 @@ def update_goal_status(user, service):
 					try:
 						agg.execute()
 					except Exception:
+						print "exception in update"
 						return None
 					if len(agg.execute()['bucket']) != 0 and len(agg.execute()['bucket'][-1]['dataset'][0]['point']) != 0:
 						if goal.goal_type == "Steps":
@@ -74,8 +75,9 @@ def update_goal_status(user, service):
 				agg = get_aggregate(goal, service, datetime.datetime.now())
 				print "Got to here"	
 				try:
-					agg.excute()
+					agg.execute()
 				except Exception:
+					print "exception in update"
 					return None
 				if len(agg.execute()['bucket']) != 0 and len(agg.execute()['bucket'][-1]['dataset'][0]['point']) == 0:
 					return "No data"

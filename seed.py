@@ -70,7 +70,7 @@ def make_first_users():
 	email = "sarahjaneiom@gmail.com"
 	password = "1234"
 	hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(10))
-	first_user = User(username=username, email=email, password=hashed_password)
+	first_user = User(username=username, email=email, password=hashed_password, timezone="US/Pacific")
 	db.session.add(first_user)
 	db.session.commit()
 
@@ -97,7 +97,7 @@ def make_first_users():
 	email = "gundren@rockseeker.com"
 	password = "1111"
 	hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(10))
-	second_user = User(username=username, email=email, password=hashed_password)
+	second_user = User(username=username, email=email, password=hashed_password, timezone="Etc/GMT-10")
 	db.session.add(second_user)
 	db.session.commit()
 
@@ -140,7 +140,7 @@ def make_more_users_network():
 		email = username+"@"+username+".com"
 		password = "password"
 		hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(10))
-		user = User(username=username, email=email, password=hashed_password)
+		user = User(username=username, email=email, password=hashed_password, timezone="US/Pacific")
 		db.session.add(user)
 		db.session.commit()
 		user_id = User.query.filter(User.email == email).one().user_id

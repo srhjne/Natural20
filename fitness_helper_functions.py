@@ -2,6 +2,7 @@ import datetime
 import time
 from model import GoalStatus, Goal, db, SleepStatus
 from flask import session, redirect
+import pytz
 
 # def get_last_week_millis():
 # 	""" gets the milliseconds from epoch for the last week """
@@ -91,7 +92,7 @@ def update_goal_status(user, service):
 					value = agg.execute()['bucket'][-1]['dataset'][0]['point'][0]['value'][0][column]
 					print value, most_recent_status.value
 					if most_recent_status.value != value:
-						goalprogress = GoalStatus(goal_id = goal.goal_id, date_recorded = datetime.datetime.now(), value=value)
+						goalprogress = GoalStatus(goal_id = goal.goal_id, date_recorded = datetime.datetime.now(pytz.timezone(user.timezone)), value=value)
 						print value
 						db.session.add(goalprogress)
 						db.session.commit()

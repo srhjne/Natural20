@@ -11,6 +11,7 @@ from model import db, User, Goal, GoalStatus, UserStatus, Monster, Attack, Level
 import os
 import datetime
 import random
+import pytz
 
 import fitness_helper_functions as fhf
 import dnd_helper_functions as dhf
@@ -513,4 +514,9 @@ def make_new_team():
 
 @app.route("/clock.json")
 def clock():
-	return jsonify(datetime.datetime.strftime(datetime.datetime.now(),"%d %B %Y"))
+	if session.get("user_id"):
+		user = User.query.get(session["user_id"])
+		timezone = user.timezone
+	else:
+		timezone = "US/Pacific"
+	return jsonify(datetime.datetime.strftime(datetime.datetime.now(pytz.timezone(timezone)),"%d %B %Y"))

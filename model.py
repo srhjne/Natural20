@@ -82,6 +82,7 @@ class User(db.Model):
     username = db.Column(db.String(12), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    timezone = db.Column(db.String(100), nullable=False)
 
 
 
@@ -135,9 +136,9 @@ class User(db.Model):
         return level[-1]
 
     @classmethod
-    def make_new_user(cls, username, email, password):
+    def make_new_user(cls, username, email, password, timezone="US/Pacific"):
         hashed_password = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(10))
-        user = cls(username=username, email=email, password=hashed_password)
+        user = cls(username=username, email=email, password=hashed_password, timezone=timezone)
         db.session.add(user)
         db.session.commit()
         user_db = cls.query.filter(cls.username==username).first()

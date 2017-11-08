@@ -144,7 +144,7 @@ class User(db.Model):
         db.session.commit()
         user_db = cls.query.filter(cls.username==username).first()
         userstatus = UserStatus(user_id=user_db.user_id,current_hp=12,current_xp=0,
-                                level=1,date_recorded=datetime.datetime.now(pytz.timezone(self.timezone)))
+                                level=1,date_recorded=datetime.datetime.now(pytz.utc)#pytz.timezone(self.timezone)))
         db.session.add(userstatus)
         db.session.commit()
 

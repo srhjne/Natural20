@@ -264,7 +264,8 @@ def login_post():
 
 @app.route('/logout')
 def logout():
-	del session["user_id"]
+	if session.get("user_id", None):
+		del session["user_id"]
 	flash("You are now logged out")
 	return redirect("/login")
 

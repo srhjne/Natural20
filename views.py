@@ -19,7 +19,7 @@ import bcrypt
 
 @app.before_request
 def check_login_time():
-	if request.path not in ('/login', '/logout', '/registration','/clock.json','/static/styles.css', '/static/DUNGRG__.TTF', '/static/d20-navbar.png'):
+	if request.path not in ('/','/login', '/logout', '/registration','/clock.json','/static/styles.css', '/static/DUNGRG__.TTF', '/static/d20-navbar.png'):
 		if session.get("login_time", None) and session.get("user_id", None):
 			if (datetime.datetime.now() - session.get("login_time")).total_seconds() > 60*60:
 				flash("Your session has timed out, please log in again")

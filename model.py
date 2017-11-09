@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 import random
 import bcrypt
+import pytz
 
 
 
@@ -82,6 +83,7 @@ class User(db.Model):
     username = db.Column(db.String(12), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    timezone = db.Column(db.String(100), nullable=False)
 
 
 
@@ -89,19 +91,24 @@ class User(db.Model):
         return "<User id=%s, username=%s>" %(self.user_id, self.username)
 
     def get_current_status(self):
-        return [userstatus for userstatus in self.userstatus if userstatus.date_recorded <= datetime.datetime.now()][-1]
+        print "user statuses", self.userstatus
+        print datetime.datetime.now()
+        return [userstatus for userstatus in self.userstatus if pytz.utc.localize(userstatus.date_recorded) <= pytz.utc.localize(datetime.datetime.now())][-1]
 
 
     def get_current_goals(self):
         goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_from < datetime.datetime.now(), Goal.valid_to > datetime.datetime.now()).all()
+        # print "goals selectes", goals
+        # print pytz.utc.localize(datetime.datetime.now())
+        # print  "all goals", [(goal.valid_from, (goal.valid_from < pytz.utc.localize(datetime.datetime.now()))) for goal in Goal.query.filter(Goal.user_id == self.user_id).all()]
         return goals
 
     def get_unresolved_goals(self):
-        goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_from < datetime.datetime.now(), Goal.resolved.is_(None)).all()
+        goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_from< pytz.utc.localize(datetime.datetime.now()), Goal.resolved.is_(None)).all()
         return goals
 
     def get_unresolved_overdue_goals(self):
-        goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_to < datetime.datetime.now(), Goal.resolved.is_(None)).all()
+        goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_to < pytz.utc.localize(datetime.datetime.now()), Goal.resolved.is_(None)).all()
         return goals
 
     def calc_xp(self, goal_value, valid_from, valid_to, goal_type="Steps", frequency="Total"):
@@ -135,19 +142,22 @@ class User(db.Model):
         return level[-1]
 
     @classmethod
-    def make_new_user(cls, username, email, password):
+    def make_new_user(cls, username, email, password, timezone="US/Pacific"):
         hashed_password = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(10))
-        user = cls(username=username, email=email, password=hashed_password)
+        user = cls(username=username, email=email, password=hashed_password, timezone=timezone)
         db.session.add(user)
         db.session.commit()
         user_db = cls.query.filter(cls.username==username).first()
+        date_recorded = pytz.utc.localize(datetime.datetime.now())
         userstatus = UserStatus(user_id=user_db.user_id,current_hp=12,current_xp=0,
-                                level=1,date_recorded=datetime.datetime.now())
+                                level=1,date_recorded=date_recorded)#pytz.timezone(self.timezone)))
         db.session.add(userstatus)
         db.session.commit()
 
     def reroll_stats(self):
-        userstatus = UserStatus(user_id=self.user_id, current_xp=0, current_hp=12, level=1, date_recorded=datetime.datetime.now())
+        date_recorded = pytz.utc.localize(datetime.datetime.now())
+        print date_recorded
+        userstatus = UserStatus(user_id=self.user_id, current_xp=0, current_hp=12, level=1, date_recorded=date_recorded)
         db.session.add(userstatus)
         db.session.commit()
 

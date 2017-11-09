@@ -4,6 +4,7 @@ from server import app
 import datetime
 import random
 import bcrypt
+import pytz
 
 
 
@@ -70,18 +71,18 @@ def make_first_users():
 	email = "sarahjaneiom@gmail.com"
 	password = "1234"
 	hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(10))
-	first_user = User(username=username, email=email, password=hashed_password)
+	first_user = User(username=username, email=email, password=hashed_password, timezone="US/Pacific")
 	db.session.add(first_user)
 	db.session.commit()
 
 	user_id = User.query.filter(User.email == email).one().user_id
 	goal_type = "Steps"
-	valid_from = datetime.datetime.strptime("19-Sep-2017", "%d-%b-%Y")
-	valid_to = datetime.datetime.strptime("25-Sep-2017","%d-%b-%Y")
+	valid_from = datetime.datetime.strptime("19-Sep-2017", "%d-%b-%Y")#.replace(tzinfo = pytz.timezone("US/Pacific"))
+	valid_to = datetime.datetime.strptime("25-Sep-2017","%d-%b-%Y")#.replace(tzinfo = pytz.timezone("US/Pacific"))
 	value = 15000
 	xp = 300
 
-	date_recorded = datetime.datetime.strptime("24-Sep-2017","%d-%b-%Y")
+	date_recorded = datetime.datetime.strptime("24-Sep-2017","%d-%b-%Y").replace(tzinfo = pytz.utc)
 
 
 
@@ -97,14 +98,14 @@ def make_first_users():
 	email = "gundren@rockseeker.com"
 	password = "1111"
 	hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(10))
-	second_user = User(username=username, email=email, password=hashed_password)
+	second_user = User(username=username, email=email, password=hashed_password, timezone="Etc/GMT-10")
 	db.session.add(second_user)
 	db.session.commit()
 
 	user_id = User.query.filter(User.email == email).one().user_id
 	goal_type = "Steps"
-	valid_from = datetime.datetime.strptime("01-Oct-2017", "%d-%b-%Y")
-	valid_to = datetime.datetime.strptime("10-Oct-2017","%d-%b-%Y")
+	valid_from = datetime.datetime.strptime("01-Oct-2017", "%d-%b-%Y").replace(tzinfo = pytz.timezone("Etc/GMT-10"))
+	valid_to = datetime.datetime.strptime("10-Oct-2017","%d-%b-%Y").replace(tzinfo = pytz.timezone("Etc/GMT-10"))
 	value = 700000
 	xp = 300
 	first_goal = Goal(user_id=user_id, goal_type=goal_type,valid_to=valid_to, 
@@ -114,7 +115,7 @@ def make_first_users():
 
 
 	goal_id = Goal.query.filter(Goal.user_id == user_id, Goal.goal_type == "Steps").one().goal_id
-	date_recorded = datetime.datetime.strptime("03-Oct-2017","%d-%b-%Y")
+	date_recorded = datetime.datetime.strptime("03-Oct-2017","%d-%b-%Y").replace(tzinfo = pytz.utc)
 	value = 1000
 	first_status = GoalStatus(date_recorded=date_recorded, value=value, goal_id=goal_id)
 	db.session.add(first_status)
@@ -140,13 +141,13 @@ def make_more_users_network():
 		email = username+"@"+username+".com"
 		password = "password"
 		hashed_password = bcrypt.hashpw(password, bcrypt.gensalt(10))
-		user = User(username=username, email=email, password=hashed_password)
+		user = User(username=username, email=email, password=hashed_password, timezone="US/Pacific")
 		db.session.add(user)
 		db.session.commit()
 		user_id = User.query.filter(User.email == email).one().user_id
 		goal_type = "Steps"
-		valid_from = datetime.datetime.strptime("05-Oct-2017", "%d-%b-%Y")
-		valid_to = datetime.datetime.strptime("01-Nov-2017","%d-%b-%Y")
+		valid_from = datetime.datetime.strptime("05-Oct-2017", "%d-%b-%Y")#.replace(tzinfo = pytz.timezone("US/Pacific"))
+		valid_to = datetime.datetime.strptime("01-Nov-2017","%d-%b-%Y")#.replace(tzinfo = pytz.timezone("US/Pacific"))
 		value = random.randint(10,50)*1000
 		xp = 200
 		first_goal = Goal(user_id=user_id, goal_type=goal_type,valid_to=valid_to, 
@@ -195,8 +196,8 @@ def make_more_users_network():
 	for i in range(2,34):
 		teams = Team.query.all()
 		team_id = random.choice(teams).team_id
-		valid_from= datetime.datetime.strptime("12-10-2017", "%d-%m-%Y")
-		valid_to= datetime.datetime.strptime("31-12-2999", "%d-%m-%Y")
+		valid_from= datetime.datetime.strptime("12-10-2017", "%d-%m-%Y")#.replace(tzinfo = pytz.timezone("US/Pacific"))
+		valid_to= datetime.datetime.strptime("31-12-2999", "%d-%m-%Y")#.replace(tzinfo = pytz.timezone("US/Pacific"))
 		userteam = UserTeam(user_id=i, team_id=team_id, valid_from=valid_from, valid_to=valid_to)
 		db.session.add(userteam)
 		db.session.commit()

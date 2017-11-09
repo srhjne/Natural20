@@ -11,6 +11,7 @@ from model import db, User, Goal, GoalStatus, UserStatus, Monster, Attack, Level
 import os
 import datetime
 import random
+import pytz
 
 import fitness_helper_functions as fhf
 import dnd_helper_functions as dhf
@@ -71,15 +72,15 @@ def profile_page(username):
 					mean_value = goal.get_mean_value_daily()
 					progress = goal.get_current_status()
 					if goal.goal_type == "Sleep":
-						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), round(mean_value/(60.0*60),2), min(100.0*mean_value/goal.value,100), goal])
+						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), round(mean_value/(60.0*60),2), min(100.0*mean_value/goal.value,100), goal])
 					else:
-						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), round(mean_value,2), min(100.0*mean_value/goal.value,100), goal])
+						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), round(mean_value,2), min(100.0*mean_value/goal.value,100), goal])
 				else:
 					progress = goal.get_current_status()
 					if goal.goal_type == "Sleep":
-						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), progress.value/(60.0*60), min(100.0*progress.value/goal.value,100), goal])
+						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), progress.value/(60.0*60), min(100.0*progress.value/goal.value,100), goal])
 					else:
-						progresses.append([progress.date_recorded.strftime("%I:%M%p %B %d, %Y"), progress.value, min(100.0*progress.value/goal.value,100), goal])
+						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), progress.value, min(100.0*progress.value/goal.value,100), goal])
 
 
 			return render_template("user_page.html", username=username,  
@@ -214,9 +215,9 @@ def set_goal_db():
 	goal_value = request.form.get("value")
 	goal_value = int(goal_value)
 	valid_from_u = request.form.get("valid_from")
-	valid_from = datetime.datetime.strptime(valid_from_u, "%Y-%m-%d")
+	valid_from = pytz.timezone(user.timezone).localize(datetime.datetime.strptime(valid_from_u, "%Y-%m-%d")).astimezone(pytz.utc)
 	valid_to_u = request.form.get("valid_to")
-	valid_to = datetime.datetime.strptime(valid_to_u, "%Y-%m-%d")
+	valid_to = pytz.timezone(user.timezone).localize(datetime.datetime.strptime(valid_to_u, "%Y-%m-%d")).astimezone(pytz.utc)
 	frequency = request.form.get("frequency")
 	
 	xp = user.calc_xp(goal_value, valid_from, valid_to, goal_type, frequency)
@@ -514,4 +515,11 @@ def make_new_team():
 
 @app.route("/clock.json")
 def clock():
-	return jsonify(datetime.datetime.strftime(datetime.datetime.now(),"%d %B %Y"))
+
+	if session.get("user_id"):
+		user = User.query.get(session["user_id"])
+		timezone = user.timezone
+	else:
+		timezone = "US/Pacific"
+	return jsonify(datetime.datetime.strftime(datetime.datetime.now(pytz.timezone(timezone)),"%d %B %Y"))
+

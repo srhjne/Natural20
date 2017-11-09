@@ -30,7 +30,7 @@ scope = "https://www.googleapis.com/auth/fitness.activity.read"
 flow = OAuth2WebServerFlow(client_id=client_id,
                            client_secret=client_secret,
                            scope=scope,
-                           redirect_uri='http://localhost:5000/auth_return/')
+                           redirect_uri='http://natural20.sarahjaneiom.com/auth_return/')
 
 global JS_TESTING_MODE
 JS_TESTING_MODE = False
@@ -55,7 +55,7 @@ from views import *
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
     # point that we invoke the DebugToolbarExtension
-    app.debug = True
+    app.debug = False
     app.jinja_env.auto_reload = app.debug  # make sure templates, etc. are not cached in debug mode
 
     connect_to_db(app)

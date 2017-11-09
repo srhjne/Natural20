@@ -97,7 +97,7 @@ class User(db.Model):
 
 
     def get_current_goals(self):
-        goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_from < datetime.datetime.now(), Goal.valid_to > pytz.utc.localize(datetime.datetime.now())).all()
+        goals = Goal.query.filter(Goal.user_id == self.user_id, Goal.valid_from < datetime.datetime.now(), Goal.valid_to > datetime.datetime.now()).all()
         # print "goals selectes", goals
         # print pytz.utc.localize(datetime.datetime.now())
         # print  "all goals", [(goal.valid_from, (goal.valid_from < pytz.utc.localize(datetime.datetime.now()))) for goal in Goal.query.filter(Goal.user_id == self.user_id).all()]
@@ -171,7 +171,7 @@ class User(db.Model):
         db.session.commit()
 
     def get_current_sleep_goals(self):
-        return [goal for goal in self.goal if goal.goal_type=="Sleep" and not goal.resolved and goal.valid_to > pytz.utc.localize(datetime.datetime.now())]
+        return [goal for goal in self.goal if goal.goal_type=="Sleep" and not goal.resolved and goal.valid_to > datetime.datetime.now()]
     
     def get_friend_requests(self):
         return db.session.query(Friendship, User).join(User, User.user_id == Friendship.user_id_1).filter(Friendship.user_id_2 == self.user_id, Friendship.verified == False).all()

@@ -23,8 +23,8 @@ def get_millis_date(datetime1):
 def get_aggregate(goal, service, enddate=None):
 	if not enddate:
 		enddate = goal.valid_to
-	millisstart = get_millis_date(goal.valid_from)
-	millisend = get_millis_date(enddate)
+	millisstart = get_millis_date(goal.valid_from.replace(tzinfo=pytz.timezone(goal.user.timezone)))
+	millisend = get_millis_date(enddate.replace(tzinfo=pytz.timezone(goal.user.timezone)))
 	if goal.frequency == "Daily":
 		delta = 1000*60*60*24
 	else:

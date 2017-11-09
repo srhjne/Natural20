@@ -215,9 +215,9 @@ def set_goal_db():
 	goal_value = request.form.get("value")
 	goal_value = int(goal_value)
 	valid_from_u = request.form.get("valid_from")
-	valid_from = datetime.datetime.strptime(valid_from_u, "%Y-%m-%d").replace(pytz.timezone(user.timezone))
+	valid_from = pytz.timezone(user.timezone).localize(datetime.datetime.strptime(valid_from_u, "%Y-%m-%d")).astimezone(pytz.utc)
 	valid_to_u = request.form.get("valid_to")
-	valid_to = datetime.datetime.strptime(valid_to_u, "%Y-%m-%d").replace(pytz.timezone(user.timezone))
+	valid_to = pytz.timezone(user.timezone).localize(datetime.datetime.strptime(valid_to_u, "%Y-%m-%d")).astimezone(pytz.utc)
 	frequency = request.form.get("frequency")
 	
 	xp = user.calc_xp(goal_value, valid_from, valid_to, goal_type, frequency)

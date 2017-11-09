@@ -82,7 +82,7 @@ def make_first_users():
 	value = 15000
 	xp = 300
 
-	date_recorded = datetime.datetime.strptime("24-Sep-2017","%d-%b-%Y")#.replace(tzinfo = pytz.timezone("US/Pacific"))
+	date_recorded = datetime.datetime.strptime("24-Sep-2017","%d-%b-%Y").replace(tzinfo = pytz.utc)
 
 
 
@@ -104,8 +104,8 @@ def make_first_users():
 
 	user_id = User.query.filter(User.email == email).one().user_id
 	goal_type = "Steps"
-	valid_from = datetime.datetime.strptime("01-Oct-2017", "%d-%b-%Y")#.replace(tzinfo = pytz.timezone("Etc/GMT-10"))
-	valid_to = datetime.datetime.strptime("10-Oct-2017","%d-%b-%Y")#.replace(tzinfo = pytz.timezone("Etc/GMT-10"))
+	valid_from = datetime.datetime.strptime("01-Oct-2017", "%d-%b-%Y").replace(tzinfo = pytz.timezone("Etc/GMT-10"))
+	valid_to = datetime.datetime.strptime("10-Oct-2017","%d-%b-%Y").replace(tzinfo = pytz.timezone("Etc/GMT-10"))
 	value = 700000
 	xp = 300
 	first_goal = Goal(user_id=user_id, goal_type=goal_type,valid_to=valid_to, 
@@ -115,7 +115,7 @@ def make_first_users():
 
 
 	goal_id = Goal.query.filter(Goal.user_id == user_id, Goal.goal_type == "Steps").one().goal_id
-	date_recorded = datetime.datetime.strptime("03-Oct-2017","%d-%b-%Y")#.replace(tzinfo = pytz.timezone("Etc/GMT-10"))
+	date_recorded = datetime.datetime.strptime("03-Oct-2017","%d-%b-%Y").replace(tzinfo = pytz.utc)
 	value = 1000
 	first_status = GoalStatus(date_recorded=date_recorded, value=value, goal_id=goal_id)
 	db.session.add(first_status)

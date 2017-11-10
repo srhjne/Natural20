@@ -280,7 +280,7 @@ class Goal(db.Model):
         status_series = {}
         for status in self.goalstatus:
             day_recorded = pytz.utc.localize(status.date_recorded).astimezone(pytz.timezone(self.user.timezone)).strftime("%Y-%m-%d")
-            status_series[day_recorded] = {"value": status.value, "date_recorded": status.date_recorded}
+            status_series[day_recorded] = {"value": status.value, "date_recorded": pytz.utc.localize(status.date_recorded).astimezone(pytz.timezone(self.user.timezone))}
             if self.goal_type == "Sleep":
                 status_series[day_recorded]["bedtime"] = status.sleepstatus[0].bedtime.strftime("%H:%M")
                 status_series[day_recorded]["waketime"] = status.sleepstatus[0].waketime.strftime("%H:%M")

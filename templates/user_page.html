@@ -30,7 +30,7 @@ HP: {{hp}} <br>
 </div>
 <div id="goal_stats" class = "col-md-8 col-xs-12">
 {%if goalstatus%}
-{%for date, value, ratio, goal in goalstatus %}
+{%for date, value, ratio, goal, goal_valid_to in goalstatus %}
 <div class="figures_div">
 {%if isfriend%}
 {{username}}'s
@@ -43,7 +43,7 @@ per day until
 {%else%}
  by 
  {%endif%}
- {{goal.valid_to.strftime("%I:%M%p %B %d, %Y")}} <br>
+ {{goal_valid_to.strftime("%I:%M%p %B %d, %Y")}} <br>
 
 {%if isfriend%}
 {{username}} is

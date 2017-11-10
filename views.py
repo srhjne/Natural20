@@ -288,8 +288,8 @@ def goal_graph():
 			else:
 				series = goal.get_status_series()
 				print series
-			goal_dict[goal.goal_id] = {"series": series, "valid_from": pytc.utc.localize(goal.valid_from.strftime("%Y-%m-%d %H:%M:%S")).astimezone(pytz.timezone(user.timezone)),
-										"valid_to": pytc.utc.localize(goal.valid_to.strftime("%Y-%m-%d %H:%M:%S")).astimezone(pytz.timezone(user.timezone)),"value":goal.value,
+			goal_dict[goal.goal_id] = {"series": series, "valid_from": pytz.utc.localize(goal.valid_from.strftime("%Y-%m-%d %H:%M:%S")).astimezone(pytz.timezone(user.timezone)),
+										"valid_to": pytz.utc.localize(goal.valid_to.strftime("%Y-%m-%d %H:%M:%S")).astimezone(pytz.timezone(user.timezone)),"value":goal.value,
 										"frequency": goal.frequency}
 		return jsonify(goal_dict)
 	else:

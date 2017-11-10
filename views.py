@@ -72,15 +72,15 @@ def profile_page(username):
 					mean_value = goal.get_mean_value_daily()
 					progress = goal.get_current_status()
 					if goal.goal_type == "Sleep":
-						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), round(mean_value/(60.0*60),2), min(100.0*mean_value/goal.value,100), goal,pytc.utc.localize(goal.valid_to).astimezone(user.timezone)])
+						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), round(mean_value/(60.0*60),2), min(100.0*mean_value/goal.value,100), goal,pytz.utc.localize(goal.valid_to).astimezone(user.timezone)])
 					else:
-						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), round(mean_value,2), min(100.0*mean_value/goal.value,100), goal,pytc.utc.localize(goal.valid_to).astimezone(user.timezone)])
+						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), round(mean_value,2), min(100.0*mean_value/goal.value,100), goal,pytz.utc.localize(goal.valid_to).astimezone(user.timezone)])
 				else:
 					progress = goal.get_current_status()
 					if goal.goal_type == "Sleep":
-						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), progress.value/(60.0*60), min(100.0*progress.value/goal.value,100), goal ,pytc.utc.localize(goal.valid_to).astimezone(user.timezone)])
+						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), progress.value/(60.0*60), min(100.0*progress.value/goal.value,100), goal ,pytz.utc.localize(goal.valid_to).astimezone(user.timezone)])
 					else:
-						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), progress.value, min(100.0*progress.value/goal.value,100), goal,pytc.utc.localize(goal.valid_to).astimezone(user.timezone)])
+						progresses.append([pytz.utc.localize(progress.date_recorded).astimezone(pytz.timezone(user.timezone)).strftime("%I:%M%p %B %d, %Y"), progress.value, min(100.0*progress.value/goal.value,100), goal,pytz.utc.localize(goal.valid_to).astimezone(user.timezone)])
 
 
 			return render_template("user_page.html", username=username,  

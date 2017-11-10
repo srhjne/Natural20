@@ -279,7 +279,7 @@ class Goal(db.Model):
     def get_daily_status_series(self):
         status_series = {}
         for status in self.goalstatus:
-            day_recorded = pytc.utc.localize(status.date_recorded).astimezone(pytz.timezone(self.user.timezone)).strftime("%Y-%m-%d")
+            day_recorded = pytz.utc.localize(status.date_recorded).astimezone(pytz.timezone(self.user.timezone)).strftime("%Y-%m-%d")
             status_series[day_recorded] = {"value": status.value, "date_recorded": status.date_recorded}
             if self.goal_type == "Sleep":
                 status_series[day_recorded]["bedtime"] = status.sleepstatus[0].bedtime.strftime("%H:%M")

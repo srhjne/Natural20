@@ -52,6 +52,10 @@ def update_goal_status(user, service):
 	for goal in goals:
 				if goal.goal_type not in ("Steps", "Calories"):
 					continue
+				if goal.goal_type == "Steps":
+					column = "intVal"
+				elif goal.goal_type == "Calories":
+					column = "fpVal"
 				print goal
 				most_recent_status = goal.get_current_status()
 				last_3days = goal.get_status_last_3days()
@@ -81,12 +85,9 @@ def update_goal_status(user, service):
 					print "exception in update"
 					return None
 				if len(agg.execute()['bucket']) != 0 and len(agg.execute()['bucket'][-1]['dataset'][0]['point']) == 0:
-					return "No data"
+					pass
 				else:
-					if goal.goal_type == "Steps":
-						column = "intVal"
-					elif goal.goal_type == "Calories":
-						column = "fpVal"
+					
 					print "got to the second bit"
 					#print "Hooray you have done %s Steps" % agg.execute()['bucket'][0]['dataset'][0]['point'][0]['value'][0]['intVal']
 					value = agg.execute()['bucket'][-1]['dataset'][0]['point'][0]['value'][0][column]
@@ -96,16 +97,16 @@ def update_goal_status(user, service):
 						print value
 						db.session.add(goalprogress)
 						db.session.commit()
-					if goal.frequency == "Daily" and len(agg.execute()['bucket']) > 1:
-						print "updating yesterday"
-						value = agg.execute()['bucket'][-2]['dataset'][0]['point'][0]['value'][0][column]
-						date_eod = datetime.datetime.strptime(datetime.datetime.now().strftime("%Y-%m-%d"),"%Y-%m-%d") - datetime.timedelta(seconds=1)
-						print goal.get_daily_status_series()
-						if date_eod.strftime("%Y-%m-%d") not in goal.get_daily_status_series() or goal.get_daily_status_series()[date_eod.strftime("%Y-%m-%d")]['value'] < value:
-							goalprogress = GoalStatus(goal_id = goal.goal_id, date_recorded = date_eod, value=value)
-							print value
-							db.session.add(goalprogress)
-							db.session.commit()
+				if goal.frequency == "Daily" and len(agg.execute()['bucket']) > 1:
+					print "updating yesterday"
+					value = agg.execute()['bucket'][-2]['dataset'][0]['point'][0]['value'][0][column]
+					date_eod = datetime.datetime.strptime(datetime.datetime.now().strftime("%Y-%m-%d"),"%Y-%m-%d") - datetime.timedelta(seconds=1)
+					print goal.get_daily_status_series()
+					if date_eod.strftime("%Y-%m-%d") not in goal.get_daily_status_series() or goal.get_daily_status_series()[date_eod.strftime("%Y-%m-%d")]['value'] < value:
+						goalprogress = GoalStatus(goal_id = goal.goal_id, date_recorded = date_eod, value=value)
+						print value
+						db.session.add(goalprogress)
+						db.session.commit()
 
 
 # def set_goal(user, goal):

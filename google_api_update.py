@@ -51,7 +51,7 @@ connect_to_db(app)
 db.create_all()
 while True:
 	main()
-	# time.sleep(60)
+	time.sleep(60)
 	# try:
 	# 	main()
 	# except Exception:

@@ -394,7 +394,7 @@ class UserTest4thOct(TestCase):
 
 def example_data():
     hashed_password = bcrypt.hashpw("1234", bcrypt.gensalt(10))
-    user = User(username="ToK", password=hashed_password, email="test@test.com")
+    user = User(username="ToK", password=hashed_password, email="test@test.com", timezone="Etc/UTC")
     if not LevelLookup.query.get(1):
         l = LevelLookup(level=1, min_cr =0, max_cr=0.25, required_xp=0, hit_point_max=12)
         db.session.add(l)
@@ -427,7 +427,7 @@ def example_data():
     db.session.commit()
 
 
-    user2 = User(username="Test_friend", password=hashed_password, email="test2@test.com")
+    user2 = User(username="Test_friend", password=hashed_password, email="test2@test.com", timezone="Etc/UTC")
     db.session.add(user2)
     db.session.commit()
     user2 = User.query.filter(User.username=="Test_friend").one()
@@ -435,7 +435,7 @@ def example_data():
     db.session.add(us)
     db.session.commit()
 
-    user3 = User(username="Test2_friend", password=hashed_password, email="test2@test.com")
+    user3 = User(username="Test2_friend", password=hashed_password, email="test2@test.com", timezone="Etc/UTC")
     db.session.add(user3)
     db.session.commit()
     user3 = User.query.filter(User.username=="Test2_friend").one()

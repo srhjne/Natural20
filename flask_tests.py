@@ -431,7 +431,7 @@ def example_data():
     db.session.add(user2)
     db.session.commit()
     user2 = User.query.filter(User.username=="Test_friend").one()
-    us = UserStatus(user_id=user2.user_id, current_xp=20, current_hp=12, level=1, date_recorded=datetime.datetime.now()
+    us = UserStatus(user_id=user2.user_id, current_xp=20, current_hp=12, level=1, date_recorded=datetime.datetime.now())
     db.session.add(us)
     db.session.commit()
 
